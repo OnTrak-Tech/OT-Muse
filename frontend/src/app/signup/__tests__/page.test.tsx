@@ -6,6 +6,10 @@ jest.mock("next/image", () => ({
     default: (props: any) => <img {...props} />,
 }));
 
+jest.mock("next-auth/react", () => ({
+    signIn: jest.fn(),
+}));
+
 describe("SignupPage", () => {
     it("renders without crashing", () => {
         render(<SignupPage />);

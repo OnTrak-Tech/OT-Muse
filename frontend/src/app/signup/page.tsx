@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MdPublic } from "react-icons/md";
 import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 import AuthDivider from "@/components/auth/AuthDivider";
 import AuthInput from "@/components/auth/AuthInput";
@@ -11,16 +10,23 @@ import { signupSchema } from "@/lib/validations/auth";
 
 export default function SignupPage() {
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState("");
+    const [success, setSuccess] = useState(false);
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const result = signupSchema.safeParse({
-            email: formData.get("email"),
-            password: formData.get("password"),
-            confirmPassword: formData.get("confirmPassword"),
-        });
+        setServerError("");
 
+        const formData = new FormData(e.currentTarget);
+        const data = {
+            email: formData.get("email") as string,
+            password: formData.get("password") as string,
+            confirmPassword: formData.get("confirmPassword") as string,
+        };
+
+        // Client-side validation
+        const result = signupSchema.safeParse(data);
         if (!result.success) {
             const fieldErrors: Record<string, string> = {};
             result.error.issues.forEach((issue) => {
@@ -32,13 +38,73 @@ export default function SignupPage() {
         }
 
         setErrors({});
-        // TODO: Submit to backend API
+        setLoading(true);
+
+        try {
+            const res = await fetch("/api/auth/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: data.email,
+                    password: data.password,
+                    confirmPassword: data.confirmPassword,
+                }),
+            });
+
+            const body = await res.json();
+
+            if (!res.ok) {
+                setServerError(body.error ?? "Something went wrong");
+            } else {
+                setSuccess(true);
+            }
+        } catch {
+            setServerError("Something went wrong. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     }
 
     function clearError(field: string) {
         if (errors[field]) {
             setErrors((prev) => ({ ...prev, [field]: "" }));
         }
+    }
+
+    // Success state — check your email
+    if (success) {
+        return (
+            <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#0A0F0D] font-sans">
+                <div className="absolute inset-0 z-0">
+                    <Image
+                        src="/signup-bg.jpg"
+                        alt="Abstract dark nebula space background"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                    <div className="absolute inset-0 bg-[#0A0F0D]/80 backdrop-blur-sm"></div>
+                </div>
+
+                <div className="relative z-10 w-full max-w-md mx-4 p-8 rounded-2xl border border-white/10 bg-[#161b22]/70 backdrop-blur-xl shadow-2xl flex flex-col items-center gap-6 text-center animate-fade-in shadow-primary/10">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/20">
+                        <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h2 className="text-2xl font-bold text-white">Check Your Email</h2>
+                    <p className="text-text-muted text-sm leading-relaxed">
+                        We&apos;ve sent a verification link to your email. Click it to activate your account, then come back to log in.
+                    </p>
+                    <Link
+                        href="/login"
+                        className="mt-2 w-full rounded-lg bg-primary py-3 text-sm font-bold text-white text-center shadow-lg shadow-primary/20 hover:bg-primary-light transition-all"
+                    >
+                        Go to Login
+                    </Link>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -64,6 +130,13 @@ export default function SignupPage() {
                         Return to your universe. Build worlds together.
                     </p>
                 </div>
+
+                {/* Server Error Banner */}
+                {serverError && (
+                    <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                        {serverError}
+                    </div>
+                )}
 
                 {/* SSO Buttons */}
                 <SocialAuthButtons />
@@ -103,9 +176,10 @@ export default function SignupPage() {
 
                     <button
                         type="submit"
-                        className="mt-2 w-full rounded-lg bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary-light hover:shadow-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all duration-200 active:scale-[0.98]"
+                        disabled={loading}
+                        className="mt-2 w-full rounded-lg bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary-light hover:shadow-primary/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Enter World
+                        {loading ? "Creating Account..." : "Enter World"}
                     </button>
                 </form>
 

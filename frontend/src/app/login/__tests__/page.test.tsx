@@ -6,6 +6,14 @@ jest.mock("next/image", () => ({
     default: (props: any) => <img {...props} />,
 }));
 
+jest.mock("next-auth/react", () => ({
+    signIn: jest.fn(),
+}));
+
+jest.mock("next/navigation", () => ({
+    useSearchParams: () => new URLSearchParams(),
+}));
+
 describe("LoginPage", () => {
     it("renders without crashing", () => {
         render(<LoginPage />);
