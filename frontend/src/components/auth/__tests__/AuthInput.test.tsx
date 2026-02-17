@@ -29,7 +29,7 @@ describe("AuthInput", () => {
     it("renders an icon when provided", () => {
         // We can check if the icon's container or class is present, or simpler: render with icon and check snapshot/presence
         // Since we use react-icons, we can check if the svg is present
-        const { container } = render(<AuthInput label="Test Label" id="test-input" icon={<MdEmail data-testid="icon" />} />);
+        render(<AuthInput label="Test Label" id="test-input" icon={<MdEmail data-testid="icon" />} />);
         expect(screen.getByTestId("icon")).toBeInTheDocument();
     });
 });
