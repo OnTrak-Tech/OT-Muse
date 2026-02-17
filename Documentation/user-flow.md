@@ -45,23 +45,23 @@ This document details every step a user takes through OT-Muse, from first visit 
 
 A 4-step guided introduction that plays on first login:
 
-### Step 1 — "Welcome to OT-Muse"
+### Step 1: "Welcome to OT-Muse"
 - Brief intro: "Build entire worlds with a single prompt."
 - Animated preview showing a prompt transforming into a world.
 
-### Step 2 — "Prompt-Based Creation"
+### Step 2: "Prompt-Based Creation"
 - Explanation of how natural language prompts generate multimodal assets.
 - Example: typing "a mystical forest kingdom" → images, narration, and video appear.
 
-### Step 3 — "Iterative Editing"
+### Step 3: "Iterative Editing"
 - Shows how follow-up prompts refine the world.
 - Example: "add ancient ruins near the river" → world updates with new elements.
 
-### Step 4 — "Build Together"
+### Step 4: "Build Together"
 - Highlights real-time collaboration.
 - Shows multiple avatars editing the same world, with AI resolving conflicts.
 
-### Step 5 — "Explore and Share"
+### Step 5: "Explore and Share"
 - Demonstrates explore mode and export features.
 - CTA: **"Create Your First World"** → Redirects to Dashboard.
 
