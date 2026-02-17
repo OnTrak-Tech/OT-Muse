@@ -41,7 +41,7 @@ export default function HowItWorks() {
                             </div>
                             <h3 className="text-xl font-bold text-white mb-3">Prompt</h3>
                             <p className="text-text-secondary leading-relaxed">
-                                Describe your realm's vibe, genre, or constraints. Our LLM
+                                Describe your realm&apos;s vibe, genre, or constraints. Our LLM
                                 engine generates a foundational bible of lore, geography, and
                                 factions instantly.
                             </p>

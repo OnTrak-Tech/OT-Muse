@@ -3,7 +3,8 @@ import LoginPage from "../page";
 
 jest.mock("next/image", () => ({
     __esModule: true,
-    default: (props: any) => <img {...props} />,
+    // eslint-disable-next-line @next/next/no-img-element
+    default: (props: React.ComponentProps<'img'>) => <img alt="" {...props} />,
 }));
 
 jest.mock("next-auth/react", () => ({
