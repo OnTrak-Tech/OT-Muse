@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { MdPublic } from "react-icons/md";
 import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 import AuthDivider from "@/components/auth/AuthDivider";
@@ -10,16 +12,33 @@ import AuthInput from "@/components/auth/AuthInput";
 import { loginSchema } from "@/lib/validations/auth";
 
 export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#0A0F0D]" />}>
+            <LoginContent />
+        </Suspense>
+    );
+}
+
+function LoginContent() {
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState("");
+    const searchParams = useSearchParams();
+    const verified = searchParams.get("verified");
+    const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const result = loginSchema.safeParse({
-            email: formData.get("email"),
-            password: formData.get("password"),
-        });
+        setServerError("");
 
+        const formData = new FormData(e.currentTarget);
+        const data = {
+            email: formData.get("email") as string,
+            password: formData.get("password") as string,
+        };
+
+        // Client-side validation
+        const result = loginSchema.safeParse(data);
         if (!result.success) {
             const fieldErrors: Record<string, string> = {};
             result.error.issues.forEach((issue) => {
@@ -31,7 +50,27 @@ export default function LoginPage() {
         }
 
         setErrors({});
-        // TODO: Submit to backend API
+        setLoading(true);
+
+        try {
+            const res = await signIn("credentials", {
+                email: data.email,
+                password: data.password,
+                redirect: false,
+            });
+
+            if (res?.error) {
+                setServerError(res.error === "CredentialsSignin"
+                    ? "Invalid email or password"
+                    : res.error);
+            } else if (res?.ok) {
+                window.location.href = callbackUrl;
+            }
+        } catch {
+            setServerError("Something went wrong. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -85,6 +124,20 @@ export default function LoginPage() {
                         <span className="text-lg font-bold tracking-wide text-white">OT-Muse</span>
                     </div>
 
+                    {/* Verification Success Banner */}
+                    {verified && (
+                        <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary">
+                            ✓ Email verified successfully! You can now log in.
+                        </div>
+                    )}
+
+                    {/* Server Error Banner */}
+                    {serverError && (
+                        <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                            {serverError}
+                        </div>
+                    )}
+
                     {/* Header */}
                     <div className="text-center lg:text-left">
                         <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -134,9 +187,10 @@ export default function LoginPage() {
 
                         <button
                             type="submit"
-                            className="mt-2 flex w-full cursor-pointer items-center justify-center rounded-lg bg-primary px-5 py-3.5 text-base font-bold text-white transition-all hover:bg-primary-dark shadow-lg shadow-primary/20 active:scale-[0.98]"
+                            disabled={loading}
+                            className="mt-2 flex w-full cursor-pointer items-center justify-center rounded-lg bg-primary px-5 py-3.5 text-base font-bold text-white transition-all hover:bg-primary-dark shadow-lg shadow-primary/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Log In
+                            {loading ? "Logging in..." : "Log In"}
                         </button>
                     </form>
 
