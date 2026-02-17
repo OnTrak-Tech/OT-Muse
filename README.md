@@ -74,6 +74,7 @@ For detailed documentation, see the files below:
 | [Product Concept](Documentation/product-concept.md) | Vision, features breakdown, target audience, and value proposition |
 | [User Flow](Documentation/user-flow.md) | Step-by-step user journey through every screen and interaction |
 | [Technical Documentation](Documentation/technical.md) | Architecture, tech stack, data models, API design, and infrastructure |
+| [API Contract](Documentation/api-contract.md) | Full REST and WebSocket endpoint definitions with request/response schemas |
 
 ---
 
