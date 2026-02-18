@@ -230,7 +230,10 @@ PERMISSIONS_POLICY=$(cat <<EOF
                 "iam:DeletePolicyVersion",
                 "iam:AttachUserPolicy",
                 "iam:DetachUserPolicy",
-                "iam:ListAttachedUserPolicies"
+                "iam:ListAttachedUserPolicies",
+                "iam:ListRolePolicies",
+                "iam:PutRolePolicy",
+                "iam:DeleteRolePolicy"
             ],
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:user/ot-muse-*",
