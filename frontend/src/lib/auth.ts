@@ -14,6 +14,7 @@ const adapter = DynamoDBAdapter(dynamoClient, {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter,
+    trustHost: true, // Explicitly trust the host to fix Amplify "UntrustedHost" error
     session: {
         strategy: "jwt",
         maxAge: 30 * 24 * 60 * 60, // 30 days
