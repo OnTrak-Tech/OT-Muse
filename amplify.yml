@@ -25,7 +25,7 @@ applications:
           - .npm/**/*
           - node_modules/**/*
       artifacts:
-        baseDirectory: .next
+        baseDirectory: .
         files:
           - '**/*'
       customHeaders:
