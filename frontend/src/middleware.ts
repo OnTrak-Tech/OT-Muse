@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 // Routes that require authentication
 const protectedRoutes = ["/dashboard", "/worlds", "/settings"];
@@ -7,9 +8,21 @@ const protectedRoutes = ["/dashboard", "/worlds", "/settings"];
 // Routes that should redirect authenticated users away
 const authRoutes = ["/login", "/signup"];
 
-export default auth((req) => {
+export default async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
-    const isLoggedIn = !!req.auth;
+
+    // Get session — if auth() throws (missing AUTH_SECRET, DB unreachable, etc.)
+    // treat as unauthenticated rather than breaking all routing
+    let session = null;
+    try {
+        session = await auth();
+    } catch {
+        // Auth system unavailable — allow request through
+        // Protected routes still won't show data (server components will fail too)
+        console.error("[middleware] auth() failed — treating as unauthenticated");
+    }
+
+    const isLoggedIn = !!session?.user;
 
     // Redirect authenticated users away from login/signup
     if (isLoggedIn && authRoutes.some((route) => pathname.startsWith(route))) {
@@ -27,7 +40,7 @@ export default auth((req) => {
     }
 
     return NextResponse.next();
-});
+}
 
 export const config = {
     matcher: [
