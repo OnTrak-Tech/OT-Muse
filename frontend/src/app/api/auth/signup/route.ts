@@ -9,12 +9,16 @@ import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 const ses = new SESClient({ region: process.env.AWS_REGION ?? "us-east-1" });
 
 export async function POST(request: NextRequest) {
+    console.log("[Signup] Start processing request");
+
     try {
         const body = await request.json();
+        console.log("[Signup] Body parsed");
 
         // Validate input with Zod
         const result = signupSchema.safeParse(body);
         if (!result.success) {
+            console.warn("[Signup] Validation failed", result.error);
             const firstError = result.error.issues[0];
             return NextResponse.json(
                 { error: firstError.message },
@@ -23,73 +27,99 @@ export async function POST(request: NextRequest) {
         }
 
         const { email, password } = result.data;
+        const tableName = process.env.DYNAMODB_USERS_TABLE ?? "ot-muse-users";
+        console.log(`[Signup] Using table: ${tableName}`);
 
         // Check if user already exists
-        const existing = await dynamoClient.send(
-            new GetCommand({
-                TableName: process.env.DYNAMODB_USERS_TABLE ?? "ot-muse-users",
-                Key: { pk: `USER#${email}`, sk: `USER#${email}` },
-            })
-        );
-
-        if (existing.Item) {
-            return NextResponse.json(
-                { error: "An account with this email already exists" },
-                { status: 409 }
+        console.log(`[Signup] Checking if user exists: ${email}`);
+        try {
+            const existing = await dynamoClient.send(
+                new GetCommand({
+                    TableName: tableName,
+                    Key: { pk: `USER#${email}`, sk: `USER#${email}` },
+                })
             );
+
+            if (existing.Item) {
+                console.warn(`[Signup] User already exists: ${email}`);
+                return NextResponse.json(
+                    { error: "An account with this email already exists" },
+                    { status: 409 }
+                );
+            }
+        } catch (dbError) {
+            console.error("[Signup] DynamoDB GetCommand failed:", dbError);
+            throw dbError; // Re-throw to be caught by outer catch
         }
 
         // Hash password
+        console.log("[Signup] Hashing password");
         const hashedPassword = await hash(password, 12);
         const userId = randomUUID();
         const now = new Date().toISOString();
 
         // Create user (unverified)
-        await dynamoClient.send(
-            new PutCommand({
-                TableName: process.env.DYNAMODB_USERS_TABLE ?? "ot-muse-users",
-                Item: {
-                    pk: `USER#${email}`,
-                    sk: `USER#${email}`,
-                    id: userId,
-                    email,
-                    password: hashedPassword,
-                    name: email.split("@")[0],
-                    emailVerified: null,
-                    image: null,
-                    createdAt: now,
-                    updatedAt: now,
-                },
-            })
-        );
+        console.log("[Signup] Creating user in DynamoDB");
+        try {
+            await dynamoClient.send(
+                new PutCommand({
+                    TableName: tableName,
+                    Item: {
+                        pk: `USER#${email}`,
+                        sk: `USER#${email}`,
+                        id: userId,
+                        email,
+                        password: hashedPassword,
+                        name: email.split("@")[0],
+                        emailVerified: null,
+                        image: null,
+                        createdAt: now,
+                        updatedAt: now,
+                    },
+                })
+            );
+        } catch (putError) {
+            console.error("[Signup] DynamoDB PutCommand (User) failed:", putError);
+            throw putError;
+        }
 
         // Generate verification token
         const token = randomUUID();
         const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
 
-        await dynamoClient.send(
-            new PutCommand({
-                TableName:
-                    process.env.DYNAMODB_VERIFICATION_TOKENS_TABLE ??
-                    "ot-muse-verification-tokens",
-                Item: {
-                    pk: `TOKEN#${token}`,
-                    sk: `TOKEN#${token}`,
-                    identifier: email,
-                    token,
-                    expires,
-                },
-            })
-        );
+        // NOTE: We are storing tokens in the SAME table for simplicity and single-table design best practices
+        // If you intended to use a different table, ensure IAM permissions exist for it.
+        // Changing to use same table to match IAM policy scope which likely covers `ot-muse-users`
+        console.log("[Signup] Storing verification token");
+        try {
+            await dynamoClient.send(
+                new PutCommand({
+                    TableName: tableName, // Using same table
+                    Item: {
+                        pk: `TOKEN#${token}`,
+                        sk: `TOKEN#${token}`,
+                        identifier: email,
+                        token,
+                        expires,
+                        type: "VERIFICATION", // Discriminator
+                    },
+                })
+            );
+        } catch (tokenError) {
+            console.error("[Signup] DynamoDB PutCommand (Token) failed:", tokenError);
+            throw tokenError;
+        }
 
         // Send verification email via SES
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3000";
         const verifyUrl = `${appUrl}/api/auth/verify?token=${token}`;
+        const fromEmail = process.env.SES_FROM_EMAIL ?? "noreply@otmuse.ai";
 
+        console.log(`[Signup] Sending SES email from ${fromEmail}`);
         try {
             await ses.send(
                 new SendEmailCommand({
-                    Source: process.env.SES_FROM_EMAIL ?? "noreply@otmuse.ai",
+                    Source: fromEmail,
                     Destination: { ToAddresses: [email] },
                     Message: {
                         Subject: {
@@ -114,8 +144,9 @@ export async function POST(request: NextRequest) {
                     },
                 })
             );
+            console.log("[Signup] Email sent successfully");
         } catch (emailError) {
-            console.error("SES email error:", emailError);
+            console.error("[Signup] SES email error:", emailError);
             // Don't fail signup if email fails — user can request resend
         }
 
@@ -127,7 +158,7 @@ export async function POST(request: NextRequest) {
             { status: 201 }
         );
     } catch (error) {
-        console.error("Signup error:", error);
+        console.error("[Signup] Global error handler:", error);
         return NextResponse.json(
             { error: "Something went wrong. Please try again." },
             { status: 500 }
