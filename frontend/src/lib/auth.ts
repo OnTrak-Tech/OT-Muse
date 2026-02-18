@@ -18,6 +18,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         strategy: "jwt",
         maxAge: 30 * 24 * 60 * 60, // 30 days
     },
+    debug: true, // Enable verbose logging for debugging
+    logger: {
+        error(code, ...message) {
+            console.error(code, message);
+        },
+        warn(code, ...message) {
+            console.warn(code, message);
+        },
+        debug(code, ...message) {
+            console.log(code, message);
+        },
+    },
     pages: {
         signIn: "/login",
         newUser: "/signup",
