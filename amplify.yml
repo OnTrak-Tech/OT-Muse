@@ -15,10 +15,13 @@ applications:
             - echo "AUTH_DISCORD_ID=$AUTH_DISCORD_ID" >> .env.production
             - echo "AUTH_DISCORD_SECRET=$AUTH_DISCORD_SECRET" >> .env.production
             - |
-              if [ -z "$AUTH_URL" ]; then
+              if [ -z "$AUTH_URL" ] || echo "$AUTH_URL" | grep -q "localhost"; then
                 export AUTH_URL="https://${AWS_BRANCH}.${AWS_APP_ID}.amplifyapp.com"
-                echo "Using dynamic AUTH_URL: $AUTH_URL"
-              fi            
+              fi
+              export NEXT_PUBLIC_APP_URL="$AUTH_URL"
+              echo "Using AUTH_URL: $AUTH_URL"
+              echo "AUTH_URL=$AUTH_URL" >> .env.production
+              echo "NEXT_PUBLIC_APP_URL=$AUTH_URL" >> .env.production
         build:
           commands:
             - npx tsc --noEmit
