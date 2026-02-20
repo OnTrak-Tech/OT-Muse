@@ -19,6 +19,7 @@ applications:
             - echo "DYNAMODB_SESSIONS_TABLE=$DYNAMODB_SESSIONS_TABLE" >> .env.production
             - echo "DYNAMODB_VERIFICATION_TOKENS_TABLE=$DYNAMODB_VERIFICATION_TOKENS_TABLE" >> .env.production
             - echo "APP_AWS_REGION=$APP_AWS_REGION" >> .env.production
+            - echo "SES_FROM_EMAIL=$SES_FROM_EMAIL" >> .env.production
             - |
               if [ -z "$AUTH_URL" ] || echo "$AUTH_URL" | grep -q "localhost"; then
                 export AUTH_URL="https://${AWS_BRANCH}.${AWS_APP_ID}.amplifyapp.com"
