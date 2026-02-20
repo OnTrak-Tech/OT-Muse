@@ -35,7 +35,7 @@ describe("Verify POST API", () => {
         jest.clearAllMocks();
     });
 
-    const createMockRequest = (body: any) => {
+    const createMockRequest = (body: Record<string, unknown>) => {
         return {
             json: async () => body,
             method: "POST",

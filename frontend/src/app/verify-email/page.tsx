@@ -1,6 +1,6 @@
 import React from "react";
 import VerifyEmailForm from "../../components/auth/VerifyEmailForm";
-import Link from "next/link";
+
 
 export default function VerifyEmailPage() {
     return (
