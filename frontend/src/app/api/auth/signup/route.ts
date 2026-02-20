@@ -83,25 +83,26 @@ export async function POST(request: NextRequest) {
             throw putError;
         }
 
-        // Generate verification token
-        const token = randomUUID();
-        const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
+        // Generate a 6-digit OTP
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        // Expire in 15 minutes
+        const expires = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
-        // NOTE: We are storing tokens in the SAME table for simplicity and single-table design best practices
-        // If you intended to use a different table, ensure IAM permissions exist for it.
-        // Changing to use same table to match IAM policy scope which likely covers `ot-muse-users`
-        console.log("[Signup] Storing verification token");
+        // Hash the OTP before storing
+        const hashedOtp = await hash(otpCode, 12);
+
+        console.log("[Signup] Storing hashed OTP token");
         try {
             await dynamoClient.send(
                 new PutCommand({
-                    TableName: tableName, // Using same table
+                    TableName: tableName,
                     Item: {
-                        pk: `TOKEN#${token}`,
-                        sk: `TOKEN#${token}`,
+                        pk: `VERIFY#${email}`,
+                        sk: `VERIFY#${email}`,
                         identifier: email,
-                        token,
+                        token: hashedOtp, // Store the HASH, not the plaintext code
                         expires,
-                        type: "VERIFICATION", // Discriminator
+                        type: "VERIFICATION",
                     },
                 })
             );
@@ -111,8 +112,6 @@ export async function POST(request: NextRequest) {
         }
 
         // Send verification email via SES
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3000";
-        const verifyUrl = `${appUrl}/api/auth/verify?token=${token}`;
         const fromEmail = process.env.SES_FROM_EMAIL ?? "noreply@otmuse.ai";
 
         console.log(`[Signup] Sending SES email from ${fromEmail}`);
@@ -123,19 +122,19 @@ export async function POST(request: NextRequest) {
                     Destination: { ToAddresses: [email] },
                     Message: {
                         Subject: {
-                            Data: "Verify your OT-Muse account",
+                            Data: "Your OT-Muse Verification Code",
                             Charset: "UTF-8",
                         },
                         Body: {
                             Html: {
                                 Data: `
                                     <div style="max-width:480px;margin:0 auto;font-family:sans-serif;color:#e5e7eb;background:#0A0F0D;padding:32px;border-radius:12px;">
-                                        <h1 style="color:#10B981;font-size:24px;margin-bottom:8px;">Welcome to OT-Muse</h1>
-                                        <p style="margin-bottom:24px;line-height:1.6;">Click the button below to verify your email and start building worlds.</p>
-                                        <a href="${verifyUrl}" style="display:inline-block;background:#10B981;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">
-                                            Verify Email
-                                        </a>
-                                        <p style="margin-top:24px;font-size:12px;color:#6b7280;">This link expires in 24 hours. If you didn't create an account, ignore this email.</p>
+                                        <h1 style="color:#10B981;font-size:24px;margin-bottom:8px;">Welcome to Nova Muse</h1>
+                                        <p style="margin-bottom:24px;line-height:1.6;">Use the verification code below to confirm your email and unlock your world.</p>
+                                        <div style="font-size:32px;font-weight:bold;letter-spacing:4px;color:#10B981;text-align:center;padding:16px;border:1px dashed #10B981;border-radius:8px;margin-bottom:24px;">
+                                            ${otpCode}
+                                        </div>
+                                        <p style="margin-top:24px;font-size:12px;color:#6b7280;">This code expires in 15 minutes. If you didn't create an account, ignore this email.</p>
                                     </div>
                                 `,
                                 Charset: "UTF-8",
