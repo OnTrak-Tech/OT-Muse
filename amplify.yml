@@ -14,10 +14,10 @@ applications:
             - echo "AUTH_GITHUB_SECRET=$AUTH_GITHUB_SECRET" >> .env.production
             - echo "AUTH_DISCORD_ID=$AUTH_DISCORD_ID" >> .env.production
             - echo "AUTH_DISCORD_SECRET=$AUTH_DISCORD_SECRET" >> .env.production
-            - echo "DYNAMO_USERS_TABLE=$DYNAMO_USERS_TABLE" >> .env.production
-            - echo "DYNAMO_ACCOUNTS_TABLE=$DYNAMO_ACCOUNTS_TABLE" >> .env.production
-            - echo "DYNAMO_SESSIONS_TABLE=$DYNAMO_SESSIONS_TABLE" >> .env.production
-            - echo "DYNAMO_VERIFICATION_TOKENS_TABLE=$DYNAMO_VERIFICATION_TOKENS_TABLE" >> .env.production
+            - echo "DYNAMODB_USERS_TABLE=$DYNAMODB_USERS_TABLE" >> .env.production
+            - echo "DYNAMODB_ACCOUNTS_TABLE=$DYNAMODB_ACCOUNTS_TABLE" >> .env.production
+            - echo "DYNAMODB_SESSIONS_TABLE=$DYNAMODB_SESSIONS_TABLE" >> .env.production
+            - echo "DYNAMODB_VERIFICATION_TOKENS_TABLE=$DYNAMODB_VERIFICATION_TOKENS_TABLE" >> .env.production
             - |
               if [ -z "$AUTH_URL" ] || echo "$AUTH_URL" | grep -q "localhost"; then
                 export AUTH_URL="https://${AWS_BRANCH}.${AWS_APP_ID}.amplifyapp.com"
