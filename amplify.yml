@@ -18,7 +18,7 @@ applications:
             - echo "DYNAMO_ACCOUNTS_TABLE=$DYNAMO_ACCOUNTS_TABLE" >> .env.production
             - echo "DYNAMO_SESSIONS_TABLE=$DYNAMO_SESSIONS_TABLE" >> .env.production
             - echo "DYNAMO_VERIFICATION_TOKENS_TABLE=$DYNAMO_VERIFICATION_TOKENS_TABLE" >> .env.production
-            |
+            - |
               if [ -z "$AUTH_URL" ] || echo "$AUTH_URL" | grep -q "localhost"; then
                 export AUTH_URL="https://${AWS_BRANCH}.${AWS_APP_ID}.amplifyapp.com"
               fi
