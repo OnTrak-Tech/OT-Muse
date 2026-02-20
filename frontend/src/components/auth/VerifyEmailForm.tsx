@@ -108,7 +108,7 @@ export default function VerifyEmailForm() {
                     Verify your email
                 </h1>
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-                    We've sent a 6-digit verification code to <br />
+                    We&apos;ve sent a 6-digit verification code to <br />
                     <span className="font-medium text-slate-800 dark:text-slate-200">
                         {email || "your email address"}
                     </span>.
@@ -154,7 +154,7 @@ export default function VerifyEmailForm() {
             <div className="px-8 pb-8 pt-2">
                 <div className="flex flex-col items-center justify-center gap-4 border-t border-slate-100 dark:border-slate-800 pt-6">
                     <p className="text-sm text-slate-500 dark:text-slate-400">
-                        Didn't receive the code?
+                        Didn&apos;t receive the code?
                         <button
                             className="ml-1 font-semibold text-slate-400 dark:text-slate-500 cursor-not-allowed transition-colors"
                             disabled
