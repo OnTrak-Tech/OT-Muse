@@ -2,7 +2,9 @@
 import { NextRequest } from "next/server";
 import { POST } from "../route";
 import { dynamoClient } from "@/lib/db";
-import { SESClient, mSend } from "@aws-sdk/client-ses";
+import { SESClient } from "@aws-sdk/client-ses";
+// @ts-expect-error - mSend is a custom mock added in jest.mock
+import { mSend } from "@aws-sdk/client-ses";
 import { hash } from "bcryptjs";
 
 // Mock external dependencies
