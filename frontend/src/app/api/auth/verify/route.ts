@@ -1,58 +1,67 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dynamoClient } from "@/lib/db";
 import { GetCommand, DeleteCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { compare } from "bcryptjs";
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url);
-        const token = searchParams.get("token");
+        const body = await request.json();
+        const { email, code } = body;
 
-        if (!token) {
-            return NextResponse.redirect(
-                new URL("/login?error=missing-token", request.url)
+        if (!email || !code || code.length !== 6) {
+            return NextResponse.json(
+                { error: "Valid email and 6-digit code are required." },
+                { status: 400 }
             );
         }
 
-        // Look up verification token
+        const tableName = process.env.DYNAMODB_USERS_TABLE ?? "ot-muse-users";
+
+        // 1. Look up the verification token
         const tokenResult = await dynamoClient.send(
             new GetCommand({
-                TableName:
-                    process.env.DYNAMODB_VERIFICATION_TOKENS_TABLE ??
-                    "ot-muse-verification-tokens",
-                Key: { pk: `TOKEN#${token}`, sk: `TOKEN#${token}` },
+                TableName: tableName,
+                Key: { pk: `VERIFY#${email}`, sk: `VERIFY#${email}` },
             })
         );
 
         const tokenRecord = tokenResult.Item;
 
         if (!tokenRecord) {
-            return NextResponse.redirect(
-                new URL("/login?error=invalid-token", request.url)
+            return NextResponse.json(
+                { error: "Verification code not found or expired." },
+                { status: 404 }
             );
         }
 
-        // Check expiry
+        // 2. Check expiry
         if (new Date(tokenRecord.expires) < new Date()) {
-            // Clean up expired token
             await dynamoClient.send(
                 new DeleteCommand({
-                    TableName:
-                        process.env.DYNAMODB_VERIFICATION_TOKENS_TABLE ??
-                        "ot-muse-verification-tokens",
-                    Key: { pk: `TOKEN#${token}`, sk: `TOKEN#${token}` },
+                    TableName: tableName,
+                    Key: { pk: `VERIFY#${email}`, sk: `VERIFY#${email}` },
                 })
             );
-            return NextResponse.redirect(
-                new URL("/login?error=token-expired", request.url)
+            return NextResponse.json(
+                { error: "Verification code has expired. Please sign up again." },
+                { status: 410 }
             );
         }
 
-        const email = tokenRecord.identifier;
+        // 3. Verify the code against the hashed token
+        const isValid = await compare(code, tokenRecord.token);
 
-        // Mark user as verified
+        if (!isValid) {
+            return NextResponse.json(
+                { error: "Incorrect verification code." },
+                { status: 401 }
+            );
+        }
+
+        // 4. Mark user as verified
         await dynamoClient.send(
             new UpdateCommand({
-                TableName: process.env.DYNAMODB_USERS_TABLE ?? "ot-muse-users",
+                TableName: tableName,
                 Key: { pk: `USER#${email}`, sk: `USER#${email}` },
                 UpdateExpression:
                     "SET emailVerified = :now, updatedAt = :now",
@@ -62,24 +71,23 @@ export async function GET(request: NextRequest) {
             })
         );
 
-        // Delete the used token
+        // 5. Delete the used token record
         await dynamoClient.send(
             new DeleteCommand({
-                TableName:
-                    process.env.DYNAMODB_VERIFICATION_TOKENS_TABLE ??
-                    "ot-muse-verification-tokens",
-                Key: { pk: `TOKEN#${token}`, sk: `TOKEN#${token}` },
+                TableName: tableName,
+                Key: { pk: `VERIFY#${email}`, sk: `VERIFY#${email}` },
             })
         );
 
-        // Redirect to login with success
-        return NextResponse.redirect(
-            new URL("/login?verified=true", request.url)
+        return NextResponse.json(
+            { message: "Email verified successfully." },
+            { status: 200 }
         );
     } catch (error) {
         console.error("Verification error:", error);
-        return NextResponse.redirect(
-            new URL("/login?error=verification-failed", request.url)
+        return NextResponse.json(
+            { error: "Failed to verify email. Please try again." },
+            { status: 500 }
         );
     }
 }
