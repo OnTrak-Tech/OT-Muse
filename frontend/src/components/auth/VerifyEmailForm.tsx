@@ -12,6 +12,8 @@ export default function VerifyEmailForm() {
 
     const [code, setCode] = useState<string[]>(Array(6).fill(""));
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isResending, setIsResending] = useState(false);
+    const [resendCooldown, setResendCooldown] = useState(0);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     const handleChange = (index: number, value: string) => {
@@ -95,6 +97,41 @@ export default function VerifyEmailForm() {
         }
     };
 
+    const handleResend = async () => {
+        if (!email || resendCooldown > 0 || isResending) return;
+
+        setIsResending(true);
+        try {
+            const res = await fetch("/api/auth/resend", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email }),
+            });
+
+            if (res.ok) {
+                toast.success("A new verification code has been sent!");
+                setResendCooldown(60); // 60 second cooldown
+                const timer = setInterval(() => {
+                    setResendCooldown((prev) => {
+                        if (prev <= 1) {
+                            clearInterval(timer);
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+            } else {
+                const data = await res.json();
+                toast.error(data.error || "Failed to resend code.");
+            }
+        } catch (error) {
+            toast.error("An unexpected error occurred resending the code.");
+            console.error(error);
+        } finally {
+            setIsResending(false);
+        }
+    };
+
     return (
         <>
             {/* Card Header */}
@@ -156,10 +193,15 @@ export default function VerifyEmailForm() {
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                         Didn&apos;t receive the code?
                         <button
-                            className="ml-1 font-semibold text-slate-400 dark:text-slate-500 cursor-not-allowed transition-colors"
-                            disabled
+                            type="button"
+                            onClick={handleResend}
+                            disabled={isResending || resendCooldown > 0}
+                            className={`ml-1 font-semibold transition-colors ${isResending || resendCooldown > 0
+                                    ? "text-slate-400 dark:text-slate-500 cursor-not-allowed"
+                                    : "text-primary hover:text-blue-600 cursor-pointer"
+                                }`}
                         >
-                            Resend functionality coming soon
+                            {isResending ? "Resending..." : resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend Code"}
                         </button>
                     </p>
                     <Link

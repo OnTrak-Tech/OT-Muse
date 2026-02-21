@@ -5,6 +5,8 @@ import VerifyEmailForm from "../../components/auth/VerifyEmailForm";
 export default function VerifyEmailPage() {
     return (
         <main className="relative flex-grow flex items-center justify-center min-h-screen p-4 pt-20 overflow-hidden font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 selection:bg-primary/30 selection:text-primary">
+            {/* Load Material Symbols specifically for this page */}
+            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
             {/* Background with Blur and Overlay */}
             <div className="absolute inset-0 z-0">
                 {/* Background Image - Using the same URL from the mockup */}
