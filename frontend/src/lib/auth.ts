@@ -4,7 +4,7 @@ import GitHub from "next-auth/providers/github";
 import Discord from "next-auth/providers/discord";
 import Credentials from "next-auth/providers/credentials";
 import { DynamoDBAdapter } from "@auth/dynamodb-adapter";
-import type { AdapterAccount } from "next-auth/adapters";
+import type { AdapterAccount, AdapterUser } from "next-auth/adapters";
 import { dynamoClient } from "@/lib/db";
 import { compare } from "bcryptjs";
 import { GetCommand } from "@aws-sdk/lib-dynamodb";
@@ -23,15 +23,15 @@ const adapter = {
     async getUserByAccount(providerAccountId: Pick<AdapterAccount, "provider" | "providerAccountId">) {
         try {
             return await baseAdapter.getUserByAccount!(providerAccountId);
-        } catch (e: any) {
+        } catch (e) {
             console.error("AdapterError in getUserByAccount:", e);
             throw e;
         }
     },
-    async createUser(user: any) {
+    async createUser(user: AdapterUser | Omit<AdapterUser, "id">) {
         try {
-            return await baseAdapter.createUser!(user);
-        } catch (e: any) {
+            return await baseAdapter.createUser!(user as AdapterUser);
+        } catch (e) {
             console.error("AdapterError in createUser:", e);
             throw e;
         }
