@@ -6,7 +6,16 @@ import { PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
 import { signupSchema } from "@/lib/validations/auth";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
-const ses = new SESClient({ region: process.env.AWS_REGION ?? "us-east-1" });
+const ses = new SESClient({
+    region: process.env.AWS_REGION ?? "us-east-1",
+    ...(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY ? {
+        credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            sessionToken: process.env.AWS_SESSION_TOKEN,
+        }
+    } : {})
+});
 
 export async function POST(request: NextRequest) {
     console.log("[Signup] Start processing request");
@@ -49,7 +58,7 @@ export async function POST(request: NextRequest) {
             }
         } catch (dbError) {
             console.error("[Signup] DynamoDB GetCommand failed:", dbError);
-            throw dbError; // Re-throw to be caught by outer catch
+            throw dbError;
         }
 
         // Hash password
@@ -100,7 +109,7 @@ export async function POST(request: NextRequest) {
                         pk: `VERIFY#${email}`,
                         sk: `VERIFY#${email}`,
                         identifier: email,
-                        token: hashedOtp, // Store the HASH, not the plaintext code
+                        token: hashedOtp,
                         expires,
                         type: "VERIFICATION",
                     },
