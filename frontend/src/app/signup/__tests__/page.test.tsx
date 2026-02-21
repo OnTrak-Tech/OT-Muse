@@ -11,6 +11,14 @@ jest.mock("next-auth/react", () => ({
     signIn: jest.fn(),
 }));
 
+jest.mock("next/navigation", () => ({
+    useRouter: () => ({
+        push: jest.fn(),
+        replace: jest.fn(),
+        prefetch: jest.fn(),
+    }),
+}));
+
 describe("SignupPage", () => {
     it("renders without crashing", () => {
         render(<SignupPage />);
