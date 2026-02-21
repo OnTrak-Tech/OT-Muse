@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
             }
         } catch (dbError) {
             console.error("[Signup] DynamoDB GetCommand failed:", dbError);
-            throw dbError; // Re-throw to be caught by outer catch
+            throw dbError;
         }
 
         // Hash password
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
                         pk: `VERIFY#${email}`,
                         sk: `VERIFY#${email}`,
                         identifier: email,
-                        token: hashedOtp, // Store the HASH, not the plaintext code
+                        token: hashedOtp,
                         expires,
                         type: "VERIFICATION",
                     },
