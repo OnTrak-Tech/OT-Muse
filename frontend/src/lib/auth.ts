@@ -4,11 +4,12 @@ import GitHub from "next-auth/providers/github";
 import Discord from "next-auth/providers/discord";
 import Credentials from "next-auth/providers/credentials";
 import { DynamoDBAdapter } from "@auth/dynamodb-adapter";
+import type { AdapterAccount } from "next-auth/adapters";
 import { dynamoClient } from "@/lib/db";
 import { compare } from "bcryptjs";
 import { GetCommand } from "@aws-sdk/lib-dynamodb";
 
-const adapter = DynamoDBAdapter(dynamoClient, {
+const baseAdapter = DynamoDBAdapter(dynamoClient, {
     tableName: process.env.DYNAMODB_USERS_TABLE ?? "ot-muse-users",
     partitionKey: "pk",
     sortKey: "sk",
@@ -16,6 +17,26 @@ const adapter = DynamoDBAdapter(dynamoClient, {
     indexPartitionKey: "GSI1PK",
     indexSortKey: "GSI1SK",
 });
+
+const adapter = {
+    ...baseAdapter,
+    async getUserByAccount(providerAccountId: Pick<AdapterAccount, "provider" | "providerAccountId">) {
+        try {
+            return await baseAdapter.getUserByAccount!(providerAccountId);
+        } catch (e: any) {
+            console.error("AdapterError in getUserByAccount:", e);
+            throw e;
+        }
+    },
+    async createUser(user: any) {
+        try {
+            return await baseAdapter.createUser!(user);
+        } catch (e: any) {
+            console.error("AdapterError in createUser:", e);
+            throw e;
+        }
+    }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter,
