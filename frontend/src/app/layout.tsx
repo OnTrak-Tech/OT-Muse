@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google"; // Removed Material_Symbols_Outlined
 import "./globals.css";
+import "material-symbols/outlined.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
