@@ -10,6 +10,11 @@ import { GetCommand } from "@aws-sdk/lib-dynamodb";
 
 const adapter = DynamoDBAdapter(dynamoClient, {
     tableName: process.env.DYNAMODB_USERS_TABLE ?? "ot-muse-users",
+    partitionKey: "pk",
+    sortKey: "sk",
+    indexName: "GSI1",
+    indexPartitionKey: "GSI1PK",
+    indexSortKey: "GSI1SK",
 });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
