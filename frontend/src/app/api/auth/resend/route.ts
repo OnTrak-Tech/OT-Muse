@@ -3,7 +3,6 @@ import { dynamoClient } from "@/lib/db";
 import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { hash } from "bcryptjs";
-import { randomUUID } from "crypto";
 
 const ses = new SESClient({
     region: process.env.AWS_REGION ?? "us-east-1",
