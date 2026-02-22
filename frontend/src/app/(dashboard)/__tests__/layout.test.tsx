@@ -2,7 +2,11 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import DashboardLayout from '../layout';
 
-jest.mock('@/components/dashboard/Sidebar', () => () => <div data-testid="mock-sidebar">Sidebar</div>);
+jest.mock('@/components/dashboard/Sidebar', () => {
+    const MockSidebar = () => <div data-testid="mock-sidebar">Sidebar</div>;
+    MockSidebar.displayName = 'MockSidebar';
+    return MockSidebar;
+});
 
 describe('Dashboard Layout', () => {
     it('renders sidebar and children', () => {

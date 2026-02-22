@@ -3,9 +3,11 @@ import { render, screen } from '@testing-library/react';
 import DashboardPage from '../page';
 
 jest.mock('@/components/dashboard/WorldCard', () => {
-    return function DummyWorldCard(props: any) {
+    const DummyWorldCard = (props: { title: string }) => {
         return <div data-testid="world-card-mock">{props.title}</div>;
     };
+    DummyWorldCard.displayName = 'DummyWorldCard';
+    return DummyWorldCard;
 });
 
 describe('Dashboard Page', () => {
