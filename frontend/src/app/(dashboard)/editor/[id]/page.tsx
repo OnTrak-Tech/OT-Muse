@@ -1,9 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 import React from "react";
 import EditorToolbar from "@/components/editor/EditorToolbar";
 import InspectorPanel from "@/components/editor/InspectorPanel";
 import Link from "next/link";
 
-export default function EditorPage({ params }: { params: { id: string } }) {
+export default function EditorPage() {
     return (
         <div data-testid="editor-page" className="flex-1 flex flex-col h-full overflow-hidden bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100">
             {/* Top Navigation Bar */}

@@ -2,24 +2,32 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import EditorPage from '../page';
 
-jest.mock('@/components/editor/EditorToolbar', () => () => <div data-testid="editor-toolbar-mock">Toolbar Mock</div>);
-jest.mock('@/components/editor/InspectorPanel', () => () => <div data-testid="inspector-panel-mock">Inspector Mock</div>);
+jest.mock('@/components/editor/EditorToolbar', () => {
+    const MockToolbar = () => <div data-testid="editor-toolbar-mock">Toolbar Mock</div>;
+    MockToolbar.displayName = 'MockToolbar';
+    return MockToolbar;
+});
+jest.mock('@/components/editor/InspectorPanel', () => {
+    const MockInspector = () => <div data-testid="inspector-panel-mock">Inspector Mock</div>;
+    MockInspector.displayName = 'MockInspector';
+    return MockInspector;
+});
 
 describe('Editor Page', () => {
     it('renders top navigation bar', () => {
-        render(<EditorPage params={{ id: '1' }} />);
+        render(<EditorPage />);
         expect(screen.getByText(/NOVA MUSE/i)).toBeInTheDocument();
         expect(screen.getByText(/The Rust Outpost/i)).toBeInTheDocument();
     });
 
     it('renders the mocked toolbar and inspector', () => {
-        render(<EditorPage params={{ id: '1' }} />);
+        render(<EditorPage />);
         expect(screen.getByTestId('editor-toolbar-mock')).toBeInTheDocument();
         expect(screen.getByTestId('inspector-panel-mock')).toBeInTheDocument();
     });
 
     it('renders interactive nodes on the canvas', () => {
-        render(<EditorPage params={{ id: '1' }} />);
+        render(<EditorPage />);
         expect(screen.getByText('Scrap Metal Silo')).toBeInTheDocument();
         expect(screen.getByText('Abandoned Rover')).toBeInTheDocument();
         expect(screen.getByText('Distant Smoke')).toBeInTheDocument();
