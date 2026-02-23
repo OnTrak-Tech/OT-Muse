@@ -40,7 +40,7 @@ export default function CreateWorldPage() {
                     <div className="text-center mb-10">
                         <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400">Architect Your Reality</h1>
                         <p className="text-slate-500 dark:text-slate-400 text-lg font-light max-w-2xl mx-auto">
-                            Describe the foundations of your universe. The Nova Engine will extrapolate the history, geography, and inhabitants.
+                            Describe the foundations of your universe. The OT-Muse Engine will extrapolate the history, geography, and inhabitants.
                         </p>
                     </div>
 
