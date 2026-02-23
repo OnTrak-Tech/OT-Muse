@@ -46,9 +46,9 @@ describe('Preferences Page', () => {
     it('renders the Theme Toggle', () => {
         render(<PreferencesPage />);
         expect(screen.getByText(/App Theme/i)).toBeInTheDocument();
-        expect(screen.getByText(/Light/i)).toBeInTheDocument();
-        expect(screen.getByText(/Dark/i)).toBeInTheDocument();
-        expect(screen.getByText(/System/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /light_mode Light/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /dark_mode Dark/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /settings_brightness System/i })).toBeInTheDocument();
     });
 
     it('renders the Sign Out button', () => {

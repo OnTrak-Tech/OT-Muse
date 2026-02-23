@@ -16,7 +16,7 @@ jest.mock('@/components/editor/InspectorPanel', () => {
 describe('Editor Page', () => {
     it('renders top navigation bar', () => {
         render(<EditorPage />);
-        expect(screen.getByText(/NOVA MUSE/i)).toBeInTheDocument();
+        expect(screen.getByText(/OT-Muse/i)).toBeInTheDocument();
         expect(screen.getByText(/The Rust Outpost/i)).toBeInTheDocument();
     });
 
