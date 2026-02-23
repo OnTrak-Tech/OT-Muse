@@ -13,7 +13,7 @@ export default function EditorPage() {
                 <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2 text-primary font-bold text-xl tracking-tighter">
                         <span className="material-symbols-outlined text-[20px]">auto_awesome</span>
-                        <span className="hidden sm:inline">NOVA MUSE</span>
+                        <span className="hidden sm:inline">OT-MUSE</span>
                     </div>
                     <div className="h-6 w-px bg-gray-300 dark:bg-gray-700"></div>
                     <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
