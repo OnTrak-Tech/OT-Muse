@@ -79,9 +79,9 @@ export default function SignupPage() {
                 <Image
                     src="/signup-bg.jpg"
                     alt="Abstract dark nebula space background"
-                    fill
+                    fill={true}
                     className="object-cover"
-                    priority
+                    priority={true}
                 />
                 <div className="absolute inset-0 bg-[#0A0F0D]/80 backdrop-blur-sm"></div>
             </div>
