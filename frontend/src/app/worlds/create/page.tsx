@@ -10,7 +10,6 @@ export default function CreateWorldPage() {
     const [prompt, setPrompt] = useState("");
     // Default to Sci-Fi, but will be overwritten if user has an archetype in session
     const [archetype, setArchetype] = useState("Sci-Fi");
-    const [visualStyle, setVisualStyle] = useState("Cinematic Realistic");
     const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
     useEffect(() => {
@@ -33,8 +32,6 @@ export default function CreateWorldPage() {
             default: return "category"; // fallback
         }
     };
-
-    const styles = ["Cinematic Realistic", "Cyberpunk Noir", "Watercolor", "Low Poly"];
 
     return (
         <div className="bg-background min-h-screen flex overflow-hidden">
@@ -114,29 +111,6 @@ export default function CreateWorldPage() {
                                             <span className="text-[10px] font-bold text-text-muted group-hover:text-foreground transition-colors uppercase tracking-wider mt-1">
                                                 Change
                                             </span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Visual Style Selection */}
-                                <div>
-                                    <label className="text-xs font-bold text-text-muted uppercase tracking-wider block mb-3">Visual Style</label>
-                                    <div className="flex flex-wrap gap-3">
-                                        {styles.map((style) => (
-                                            <button
-                                                key={style}
-                                                onClick={() => setVisualStyle(style)}
-                                                className={`px-4 py-2 rounded-xl text-sm transition-all border ${visualStyle === style
-                                                    ? "bg-primary/10 text-primary border-primary shadow-sm shadow-primary/20"
-                                                    : "bg-background text-text-secondary border-border hover:border-text-muted hover:text-foreground"
-                                                    }`}
-                                            >
-                                                {style}
-                                            </button>
-                                        ))}
-                                        {/* Custom Settings button */}
-                                        <button className="px-3 py-2 rounded-xl text-text-muted border border-dashed border-border hover:border-text-secondary hover:text-foreground transition-all flex items-center justify-center">
-                                            <span className="material-symbols-outlined text-[18px]">tune</span>
                                         </button>
                                     </div>
                                 </div>
