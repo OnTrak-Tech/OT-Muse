@@ -80,9 +80,9 @@ function LoginContent() {
                 <Image
                     src="/login-hero.png"
                     alt="Futuristic glowing AI city landscape in teal and emerald"
-                    fill
+                    fill={true}
                     className="object-cover"
-                    priority
+                    priority={true}
                 />
 
                 {/* Overlay */}
@@ -109,7 +109,7 @@ function LoginContent() {
                     <Image
                         src="/login-hero.png"
                         alt="Background"
-                        fill
+                        fill={true}
                         className="object-cover opacity-10"
                     />
                     <div className="absolute inset-0 bg-[#0A0F0D]/90"></div>
