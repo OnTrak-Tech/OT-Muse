@@ -29,7 +29,7 @@ describe('BillingSettingsPage', () => {
 
         // Table content checks
         expect(screen.getByText('INV-2026-0012')).toBeInTheDocument();
-        expect(screen.getByText('$29.00')).toBeInTheDocument();
+        expect(screen.getAllByText('$29.00')[0]).toBeInTheDocument();
 
         expect(screen.getByRole('button', { name: /Need Help?/i })).toBeInTheDocument();
     });
