@@ -40,7 +40,7 @@ export default function Sidebar() {
                 <div className="my-6 border-t border-border"></div>
 
                 <p className="px-4 text-xs font-medium text-text-muted uppercase tracking-wider mb-2">Settings</p>
-                <Link href="/preferences" className="flex items-center gap-3 px-4 py-3 text-text-secondary hover:bg-surface-elevated hover:text-foreground rounded-xl transition-colors group">
+                <Link href="/settings" className="flex items-center gap-3 px-4 py-3 text-text-secondary hover:bg-surface-elevated hover:text-foreground rounded-xl transition-colors group">
                     <span className="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">tune</span>
                     <span className="font-medium">Preferences</span>
                 </Link>
