@@ -16,8 +16,10 @@ export default function CreateWorldPage() {
     useEffect(() => {
         // In a real app the archetype would be returned as part of the customized session.user object.
         // For now, if we detect one in the session, we set it.
-        if (session?.user && (session.user as any).archetype) {
-            setArchetype((session.user as any).archetype);
+        const userArchetype = (session?.user as { archetype?: string })?.archetype;
+        if (userArchetype) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setArchetype(userArchetype);
         }
     }, [session]);
 
