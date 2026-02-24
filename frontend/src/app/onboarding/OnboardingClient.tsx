@@ -69,8 +69,8 @@ export default function OnboardingClient() {
                             key={archetype.id}
                             onClick={() => setSelectedArchetype(archetype.id)}
                             className={`relative bg-surface rounded-2xl p-6 text-left transition-all duration-300 border-2 overflow-hidden flex flex-col group ${isSelected
-                                    ? "border-primary shadow-xl shadow-primary/10 scale-[1.02]"
-                                    : "border-border hover:border-primary/50 hover:bg-surface-elevated hover:shadow-lg hover:-translate-y-1 hover:shadow-primary/5"
+                                ? "border-primary shadow-xl shadow-primary/10 scale-[1.02]"
+                                : "border-border hover:border-primary/50 hover:bg-surface-elevated hover:shadow-lg hover:-translate-y-1 hover:shadow-primary/5"
                                 }`}
                         >
                             {isSelected && (
@@ -97,8 +97,8 @@ export default function OnboardingClient() {
                 onClick={handleContinue}
                 disabled={!selectedArchetype || isSubmitting}
                 className={`flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-lg transition-all ${selectedArchetype && !isSubmitting
-                        ? "bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/20 hover:scale-[1.02] cursor-pointer"
-                        : "bg-surface-elevated text-text-muted cursor-not-allowed border border-border"
+                    ? "bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/20 hover:scale-[1.02] cursor-pointer"
+                    : "bg-surface-elevated text-text-muted cursor-not-allowed border border-border"
                     }`}
             >
                 {isSubmitting ? (
@@ -114,7 +114,7 @@ export default function OnboardingClient() {
                 )}
             </button>
             <p className="text-xs text-text-muted mt-4">
-                Don't worry, you can always switch this later.
+                Don&apos;t worry, you can always switch this later.
             </p>
         </div>
     );

@@ -17,7 +17,7 @@ export default function OnboardingPage() {
                     </div>
                     <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Welcome to OT-Muse</h1>
                     <p className="text-xl text-text-secondary max-w-2xl">
-                        To tailor your experience, tell us how you'll primarily be using the Nova Engine.
+                        To tailor your experience, tell us how you&apos;ll primarily be using the Nova Engine.
                     </p>
                 </div>
 

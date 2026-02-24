@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 interface DashboardHeaderProps {
     breadcrumbItems: Array<{ label: string; href?: string }>;
