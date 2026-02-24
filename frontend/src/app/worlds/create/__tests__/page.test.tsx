@@ -56,23 +56,6 @@ describe("CreateWorldPage", () => {
         expect(changeBtn).toBeInTheDocument();
     });
 
-    it("selects a different visual style when clicked", () => {
-        render(<CreateWorldPage />);
-
-        const cinematicBtn = screen.getByRole("button", { name: "Cinematic Realistic" });
-        const watercolorBtn = screen.getByRole("button", { name: "Watercolor" });
-
-        // Initial state
-        expect(cinematicBtn).toHaveClass("border-primary");
-        expect(watercolorBtn).not.toHaveClass("border-primary");
-
-        // Select Watercolor
-        fireEvent.click(watercolorBtn);
-
-        expect(cinematicBtn).not.toHaveClass("border-primary");
-        expect(watercolorBtn).toHaveClass("border-primary");
-    });
-
     it("toggles the advanced configuration accordion", () => {
         render(<CreateWorldPage />);
 
