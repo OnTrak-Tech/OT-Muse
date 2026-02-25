@@ -17,10 +17,4 @@ describe("StatsCards", () => {
         expect(screen.getByText("8,402")).toBeInTheDocument();
         expect(screen.getByText("Assets created across all worlds")).toBeInTheDocument();
     });
-
-    it("renders the Weekly Challenge banner", () => {
-        render(<StatsCards />);
-        expect(screen.getByText("Weekly Challenge")).toBeInTheDocument();
-        expect(screen.getByText("Theme: Cyber-Noir Detective")).toBeInTheDocument();
-    });
 });

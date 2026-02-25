@@ -1,8 +1,78 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { usersApi } from "@/lib/api";
 
 export default function AIEngineSettingsPage() {
+    const { data: session } = useSession();
+    const user = session?.user as { id?: string; email?: string } | undefined;
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+    // Form state
+    const [preferences, setPreferences] = useState<Record<string, any>>({
+        highQualityGenerations: true,
+        defaultArtStyle: "Sci-Fi Realism",
+        creativityVsLogic: 65,
+        contextMemoryLimit: 12000,
+    });
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            if (!user?.id || !user?.email) return;
+            try {
+                const data = await usersApi.getMe({ userId: user.id, userEmail: user.email });
+                if (data.preferences) {
+                    setPreferences(prev => ({ ...prev, ...data.preferences }));
+                }
+            } catch (error) {
+                console.error("Failed to fetch user profile", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (user) {
+            fetchProfile();
+        }
+    }, [user]);
+
+    const handleSave = async () => {
+        if (!user?.id || !user?.email) return;
+
+        setIsSaving(true);
+        setSaveMessage(null);
+
+        try {
+            await usersApi.updateMe({
+                preferences
+            }, { userId: user.id, userEmail: user.email });
+
+            setSaveMessage({ type: "success", text: "Settings saved successfully!" });
+            setTimeout(() => setSaveMessage(null), 3000);
+        } catch (error: any) {
+            console.error("Failed to save settings", error);
+            setSaveMessage({ type: "error", text: error.message || "Failed to save settings" });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handlePreferenceChange = (key: string, value: any) => {
+        setPreferences(prev => ({ ...prev, [key]: value }));
+    };
+
+    if (isLoading) {
+        return (
+            <main className="flex-1 flex flex-col items-center justify-center bg-background">
+                <span className="material-symbols-outlined text-4xl text-primary animate-spin">progress_activity</span>
+            </main>
+        );
+    }
+
     return (
         <main className="flex-1 flex flex-col relative overflow-hidden bg-background">
             <div className="flex-1 overflow-y-auto px-6 py-8 md:px-12 lg:px-20 scroll-smooth">
@@ -37,7 +107,12 @@ export default function AIEngineSettingsPage() {
                                 </div>
                                 <div className="shrink-0 pt-2">
                                     <label className="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" className="sr-only peer" defaultChecked />
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only peer"
+                                            checked={!!preferences.highQualityGenerations}
+                                            onChange={(e) => handlePreferenceChange("highQualityGenerations", e.target.checked)}
+                                        />
                                         <div className="w-11 h-6 bg-surface-elevated peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary border border-border"></div>
                                     </label>
                                 </div>
@@ -56,13 +131,14 @@ export default function AIEngineSettingsPage() {
                                 <div className="relative">
                                     <select
                                         className="appearance-none w-full bg-background border border-border text-foreground text-sm rounded-lg focus:ring-1 focus:ring-primary focus:border-primary block p-3 pr-10 outline-none transition-colors cursor-pointer"
-                                        defaultValue="Sci-Fi Realism"
+                                        value={preferences.defaultArtStyle || "Sci-Fi Realism"}
+                                        onChange={(e) => handlePreferenceChange("defaultArtStyle", e.target.value)}
                                     >
-                                        <option>Cyberpunk Noir</option>
-                                        <option>High Fantasy Watercolor</option>
-                                        <option>Sci-Fi Realism</option>
-                                        <option>Steampunk Etching</option>
-                                        <option>Low Poly 3D</option>
+                                        <option value="Cyberpunk Noir">Cyberpunk Noir</option>
+                                        <option value="High Fantasy Watercolor">High Fantasy Watercolor</option>
+                                        <option value="Sci-Fi Realism">Sci-Fi Realism</option>
+                                        <option value="Steampunk Etching">Steampunk Etching</option>
+                                        <option value="Low Poly 3D">Low Poly 3D</option>
                                     </select>
                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-text-muted">
                                         <span className="material-symbols-outlined">expand_more</span>
@@ -70,17 +146,20 @@ export default function AIEngineSettingsPage() {
                                 </div>
                                 <div className="grid grid-cols-3 gap-2 mt-2">
                                     <div
-                                        className="aspect-square rounded-lg bg-cover bg-center border-2 border-primary cursor-pointer opacity-100 transition-opacity"
+                                        className={`aspect-square rounded-lg bg-cover bg-center border-2 cursor-pointer transition-opacity ${preferences.defaultArtStyle === "Cyberpunk Noir" || preferences.defaultArtStyle === "Sci-Fi Realism" ? "border-primary opacity-100" : "border-transparent opacity-50 hover:opacity-100"}`}
+                                        onClick={() => handlePreferenceChange("defaultArtStyle", "Sci-Fi Realism")}
                                         aria-label="Abstract sci-fi landscape with neon lights"
                                         style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuATvKmgE69sV7V6h8oYGxdEHfePw4Ab_d4CzcEnLPskepi2RPxhomc6ZiDXxdI-UNUkOqaB1ILoA1FVizThbicWXDH35Xx0Sp_7v3_-nTq7JVGxbvrg-Wz_xebxYLvKUgloSOSRbRnaPp02CEk-O0KNmrZopkWEKKvMQFs0ToDAOKl1w-YDjDfyYdHUeKjNOIIl8xWWt0e3fnbfpjOuRHSK5vH8ORSjMO9wPqfPaMj-BJp_bkRRN_eq377cA7cWfKs0yOwG53A-hps')" }}
                                     />
                                     <div
-                                        className="aspect-square rounded-lg bg-cover bg-center border border-transparent cursor-pointer opacity-50 hover:opacity-100 transition-opacity"
+                                        className={`aspect-square rounded-lg bg-cover bg-center border-2 cursor-pointer transition-opacity ${preferences.defaultArtStyle === "Steampunk Etching" || preferences.defaultArtStyle === "Low Poly 3D" ? "border-primary opacity-100" : "border-transparent opacity-50 hover:opacity-100"}`}
+                                        onClick={() => handlePreferenceChange("defaultArtStyle", "Low Poly 3D")}
                                         aria-label="Dark moody cyberpunk city street"
                                         style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDp-lEMeEKvP2nm35EZWBu7CoJlPomh-FOCDpQSt9aGW1Qo7x_kGc1C-fZObNmKghI7cfbrPPUG7fGOhgZXfB4S1660e01Z51M-NxHwyBIMeuzbK0y2SKWE7siZhKcGxXpYEpngU_KfzmBlryIbQlCFqnkSp9arO9B4Gq2bA-li17uwSVhk4TSVvcugwoCn8_wPut3McigIF0MqlLKoaHKs_zMq9e3nM3obQPQG476xUunvdUIFx2uCzkGODXnsiGCgxUEzV75wR7M')" }}
                                     />
                                     <div
-                                        className="aspect-square rounded-lg bg-cover bg-center border border-transparent cursor-pointer opacity-50 hover:opacity-100 transition-opacity"
+                                        className={`aspect-square rounded-lg bg-cover bg-center border-2 cursor-pointer transition-opacity ${preferences.defaultArtStyle === "High Fantasy Watercolor" ? "border-primary opacity-100" : "border-transparent opacity-50 hover:opacity-100"}`}
+                                        onClick={() => handlePreferenceChange("defaultArtStyle", "High Fantasy Watercolor")}
                                         aria-label="Detailed fantasy book illustration style"
                                         style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC6DpMb8Kis_w352jNtp5Nmun-XoZ3PpeH2gAhOEGBVBuxyjwnOg9OtkRpF5n9yGaymStvEvKDZNygCXWK5ji6bHbrqUd3lTfAwytMxrpfFc1V2lXIfPERIiPJCHl3cvpLnp17RxAxsSDj2yT0Ow06p_M6YOFeyNc-yVj-5KlS7IDnTIj1eddsZWxw3Os2e9YSjcly81TwVveU8UEryQNgtx2ec0n33s-NyHnls0WgnNNoOPXIKfmnI7TTWm3-PW1GDLcNPEbUV858')" }}
                                     />
@@ -102,11 +181,12 @@ export default function AIEngineSettingsPage() {
                                         max="100"
                                         min="0"
                                         type="range"
-                                        defaultValue="65"
+                                        value={preferences.creativityVsLogic || 65}
+                                        onChange={(e) => handlePreferenceChange("creativityVsLogic", parseInt(e.target.value))}
                                     />
                                     <div className="flex justify-between text-xs text-text-muted mt-3 font-medium uppercase tracking-wider">
                                         <span>Strict Logic</span>
-                                        <span className="text-primary">Balanced (65%)</span>
+                                        <span className="text-primary">{preferences.creativityVsLogic == 65 ? "Balanced (65%)" : `${preferences.creativityVsLogic}%`}</span>
                                         <span>Pure Chaos</span>
                                     </div>
                                 </div>
@@ -127,18 +207,26 @@ export default function AIEngineSettingsPage() {
                                         <span className="material-symbols-outlined text-text-muted">history</span>
                                         <h3 className="text-foreground text-lg font-semibold">Context Memory Limit</h3>
                                     </div>
-                                    <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">Pro Feature</span>
                                 </div>
                                 <p className="text-text-secondary text-sm max-w-3xl">
                                     Determine how much of the conversation history the AI considers when generating new responses. Higher context allows for better continuity in long campaigns.
                                 </p>
-                                <div className="w-full bg-surface-elevated rounded-full h-2.5 mb-1 mt-2">
-                                    <div className="bg-primary h-2.5 rounded-full" style={{ width: "75%" }}></div>
-                                </div>
-                                <div className="flex justify-between text-sm font-medium text-text-muted">
-                                    <span>4k Tokens</span>
-                                    <span className="text-foreground whitespace-nowrap">12k Tokens</span>
-                                    <span>32k Tokens</span>
+
+                                <div className="px-1 mt-4">
+                                    <input
+                                        className="w-full h-2 bg-surface-elevated rounded-lg appearance-none cursor-pointer accent-primary outline-none"
+                                        max="32000"
+                                        min="4000"
+                                        step="4000"
+                                        type="range"
+                                        value={preferences.contextMemoryLimit || 12000}
+                                        onChange={(e) => handlePreferenceChange("contextMemoryLimit", parseInt(e.target.value))}
+                                    />
+                                    <div className="flex justify-between text-sm font-medium text-text-muted mt-3">
+                                        <span>4k Tokens</span>
+                                        <span className="text-foreground whitespace-nowrap">{preferences.contextMemoryLimit ? `${(preferences.contextMemoryLimit / 1000)}k` : "12k"} Tokens</span>
+                                        <span>32k Tokens</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -147,16 +235,37 @@ export default function AIEngineSettingsPage() {
             </div>
 
             {/* Sticky Footer */}
-            <div className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border px-6 lg:px-20 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 z-10">
-                <button className="text-text-muted hover:text-foreground text-sm font-medium transition-colors">
-                    Reset Defaults
-                </button>
+            <div className="absolute bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border px-6 lg:px-20 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 z-10 transition-all">
+                <div className="flex items-center gap-2 flex-1">
+                    {saveMessage && (
+                        <div className={`text-sm font-medium flex items-center gap-2 ${saveMessage.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                            <span className="material-symbols-outlined text-[18px]">
+                                {saveMessage.type === 'success' ? 'check_circle' : 'error'}
+                            </span>
+                            {saveMessage.text}
+                        </div>
+                    )}
+                </div>
+
                 <div className="flex gap-4 w-full sm:w-auto">
-                    <button className="flex-1 sm:flex-none px-6 py-2.5 rounded-lg border border-border text-text-secondary text-sm font-bold hover:bg-surface-elevated hover:text-foreground transition-colors">
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="flex-1 sm:flex-none px-6 py-2.5 rounded-lg border border-border text-text-secondary text-sm font-bold hover:bg-surface-elevated hover:text-foreground transition-colors"
+                        disabled={isSaving}
+                    >
                         Cancel
                     </button>
-                    <button className="flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-gradient-to-r from-primary to-primary-dark text-white text-sm font-bold shadow-lg shadow-primary/25 hover:from-primary-light hover:to-primary transition-all">
-                        Save Changes
+                    <button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className="flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-gradient-to-r from-primary to-primary-dark text-white text-sm font-bold shadow-lg shadow-primary/25 hover:from-primary-light hover:to-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                        {isSaving ? (
+                            <>
+                                <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                                Saving...
+                            </>
+                        ) : "Save Changes"}
                     </button>
                 </div>
             </div>

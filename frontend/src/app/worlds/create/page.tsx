@@ -6,7 +6,7 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { worldsApi, generationApi } from "@/lib/api";
-import { getVocabulary } from "@/lib/domainVocabulary";
+import { getVocabulary, getArchetypes } from "@/lib/domainVocabulary";
 
 type GenerationStage = {
     name: string;
@@ -22,9 +22,12 @@ export default function CreateWorldPage() {
     const [generationProgress, setGenerationProgress] = useState(0);
     const [generationError, setGenerationError] = useState<string | null>(null);
     const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+    const [localArchetype, setLocalArchetype] = useState<string | null>(null);
+    const [isArchetypeModalOpen, setIsArchetypeModalOpen] = useState(false);
 
-    const archetype = (session?.user as { archetype?: string })?.archetype;
-    const vocab = getVocabulary(archetype);
+    // Use local archetype override if set, otherwise fallback to user's profile archetype or Game Dev
+    const currentArchetype = localArchetype ?? (session?.user as { archetype?: string })?.archetype ?? "Game Dev";
+    const vocab = getVocabulary(currentArchetype);
 
     const getIconForArchetype = (type: string) => {
         switch (type) {
@@ -95,14 +98,14 @@ export default function CreateWorldPage() {
         try {
             // Step 1: Create the world
             const world = await worldsApi.create(
-                { title: prompt.trim().substring(0, 60), description: prompt.trim(), style: archetype ?? "fantasy" },
+                { title: prompt.trim().substring(0, 60), description: prompt.trim(), style: currentArchetype },
                 auth
             );
 
             // Step 2: Start generation
             const genJob = await generationApi.generate(
                 world.worldId,
-                { prompt: prompt.trim(), options: { style: archetype ?? "fantasy" } },
+                { prompt: prompt.trim(), options: { style: currentArchetype } },
                 auth
             );
 
@@ -239,17 +242,17 @@ export default function CreateWorldPage() {
                                         >
                                             <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary" />
                                             <span className="material-symbols-outlined text-primary">
-                                                {getIconForArchetype(archetype ?? "Game Dev")}
+                                                {getIconForArchetype(currentArchetype)}
                                             </span>
                                             <span className="text-sm font-bold text-foreground text-center px-1 leading-tight">
-                                                {archetype ?? "Game Dev"}
+                                                {currentArchetype}
                                             </span>
                                         </button>
 
                                         {/* Change/Add Archetype Button */}
                                         <button
                                             type="button"
-                                            onClick={() => alert("Archetype switcher modal will open here")}
+                                            onClick={() => setIsArchetypeModalOpen(true)}
                                             className="relative w-20 h-20 rounded-xl flex items-center justify-center flex-col gap-1 transition-all overflow-hidden shrink-0 border-2 border-dashed border-border hover:border-text-secondary hover:bg-surface-elevated group"
                                         >
                                             <span className="material-symbols-outlined text-text-muted group-hover:text-foreground transition-colors text-[24px]">
