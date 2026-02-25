@@ -41,20 +41,28 @@ export function StatCard({ title, value, trend, description, icon }: StatCardPro
     );
 }
 
-export default function StatsCards() {
+export default function StatsCards({
+    totalWorlds = 0,
+    totalGenerations = 0,
+    vocabWorlds = "Worlds",
+}: {
+    totalWorlds?: number;
+    totalGenerations?: number;
+    vocabWorlds?: string;
+}) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <StatCard
-                title="Total Worlds"
-                value="12"
-                trend={{ value: "+2 this month", isPositive: true }}
+                title={`Total ${vocabWorlds}`}
+                value={totalWorlds}
+                trend={totalWorlds > 0 ? { value: `${totalWorlds} created`, isPositive: true } : undefined}
                 icon="public"
             />
 
             <StatCard
                 title="Generations"
-                value="8,402"
-                description="Assets created across all worlds"
+                value={totalGenerations.toLocaleString()}
+                description={`Assets created across all ${vocabWorlds.toLowerCase()}`}
                 icon="auto_awesome"
             />
 
