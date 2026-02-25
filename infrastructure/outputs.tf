@@ -27,3 +27,15 @@ output "ses_from_email" {
   description = "Verified SES sender email"
   value       = var.ses_from_email
 }
+
+# ── Phase 4: Lambda + API Gateway ────────────────────────────────────────────
+
+output "api_endpoint" {
+  description = "API Gateway base URL (set as NEXT_PUBLIC_API_URL in Amplify)"
+  value       = module.api_gateway.api_endpoint
+}
+
+output "lambda_function_name" {
+  description = "Lambda function name"
+  value       = module.lambda.function_name
+}

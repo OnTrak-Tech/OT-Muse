@@ -26,3 +26,15 @@ variable "s3_allowed_origins" {
   type        = list(string)
   default     = ["https://main.d23iuljt6mvkva.amplifyapp.com", "http://localhost:3000"]
 }
+
+variable "frontend_url" {
+  description = "Frontend URL for Lambda CORS configuration"
+  type        = string
+  default     = "https://main.d23iuljt6mvkva.amplifyapp.com"
+}
+
+variable "lambda_zip_path" {
+  description = "Path to the backend deployment zip file"
+  type        = string
+  default     = "../backend/deploy.zip"
+}

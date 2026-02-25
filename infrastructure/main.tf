@@ -52,3 +52,31 @@ module "lambda_iam" {
     Component = "backend"
   }
 }
+
+module "lambda" {
+  source = "./modules/lambda"
+
+  function_name       = "ot-muse-api"
+  role_arn            = module.lambda_iam.role_arn
+  zip_path            = var.lambda_zip_path
+  dynamodb_table_name = var.dynamodb_table_name
+  s3_bucket_name      = var.s3_assets_bucket_name
+  frontend_url        = var.frontend_url
+
+  tags = {
+    Component = "backend"
+  }
+}
+
+module "api_gateway" {
+  source = "./modules/api-gateway"
+
+  api_name             = "ot-muse-api"
+  lambda_function_name = module.lambda.function_name
+  lambda_invoke_arn    = module.lambda.invoke_arn
+  cors_origins         = var.s3_allowed_origins
+
+  tags = {
+    Component = "backend"
+  }
+}
