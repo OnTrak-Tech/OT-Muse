@@ -65,34 +65,6 @@ export default function StatsCards({
                 description={`Assets created across all ${vocabWorlds.toLowerCase()}`}
                 icon="auto_awesome"
             />
-
-            {/* Weekly Challenge Banner */}
-            <div className="bg-gradient-to-br from-primary to-primary-dark p-6 rounded-2xl shadow-lg shadow-primary/20 relative overflow-hidden text-white group cursor-pointer hover:shadow-primary/30 transition-all transform hover:-translate-y-0.5">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                <div className="relative z-10 flex flex-col h-full justify-between">
-                    <div>
-                        <h3 className="text-xl font-bold mb-1">Weekly Challenge</h3>
-                        <p className="text-white/80 text-sm">Theme: Cyber-Noir Detective</p>
-                    </div>
-                    <div className="mt-4 flex items-center justify-between">
-                        <div className="flex -space-x-2">
-                            <div className="w-8 h-8 rounded-full border-2 border-primary-dark bg-surface flex items-center justify-center relative overflow-hidden">
-                                <span className="material-symbols-outlined text-[16px] text-primary">person</span>
-                            </div>
-                            <div className="w-8 h-8 rounded-full border-2 border-primary-dark bg-surface flex items-center justify-center relative overflow-hidden">
-                                <span className="material-symbols-outlined text-[16px] text-primary">person</span>
-                            </div>
-                            <div className="w-8 h-8 rounded-full border-2 border-primary-dark bg-surface flex items-center justify-center relative overflow-hidden">
-                                <span className="material-symbols-outlined text-[16px] text-primary">person</span>
-                            </div>
-                            <div className="w-8 h-8 rounded-full border-2 border-primary-dark bg-primary-light flex items-center justify-center text-xs font-bold text-white">
-                                +42
-                            </div>
-                        </div>
-                        <span className="material-symbols-outlined text-2xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }
