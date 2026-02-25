@@ -228,16 +228,28 @@ PERMISSIONS_POLICY=$(cat <<EOF
                 "iam:ListPolicyVersions",
                 "iam:CreatePolicyVersion",
                 "iam:DeletePolicyVersion",
+                "iam:TagPolicy",
+                "iam:UntagPolicy",
                 "iam:AttachUserPolicy",
                 "iam:DetachUserPolicy",
                 "iam:ListAttachedUserPolicies",
                 "iam:ListRolePolicies",
                 "iam:PutRolePolicy",
-                "iam:DeleteRolePolicy"
+                "iam:DeleteRolePolicy",
+                "iam:CreateRole",
+                "iam:GetRole",
+                "iam:DeleteRole",
+                "iam:TagRole",
+                "iam:UntagRole",
+                "iam:PassRole",
+                "iam:AttachRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:ListAttachedRolePolicies"
             ],
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:user/ot-muse-*",
-                "arn:aws:iam::${ACCOUNT_ID}:policy/ot-muse-*"
+                "arn:aws:iam::${ACCOUNT_ID}:policy/ot-muse-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/ot-muse-*"
             ]
         },
         {
@@ -250,6 +262,46 @@ PERMISSIONS_POLICY=$(cat <<EOF
                 "ses:ListIdentities"
             ],
             "Resource": "*"
+        },
+        {
+            "Sid": "S3Management",
+            "Effect": "Allow",
+            "Action": [
+                "s3:CreateBucket",
+                "s3:DeleteBucket",
+                "s3:ListBucket",
+                "s3:GetBucketPolicy",
+                "s3:PutBucketPolicy",
+                "s3:DeleteBucketPolicy",
+                "s3:GetBucketAcl",
+                "s3:PutBucketAcl",
+                "s3:GetBucketCORS",
+                "s3:PutBucketCORS",
+                "s3:DeleteBucketCORS",
+                "s3:GetBucketVersioning",
+                "s3:PutBucketVersioning",
+                "s3:GetBucketTagging",
+                "s3:PutBucketTagging",
+                "s3:GetBucketPublicAccessBlock",
+                "s3:PutBucketPublicAccessBlock",
+                "s3:GetEncryptionConfiguration",
+                "s3:PutEncryptionConfiguration",
+                "s3:GetBucketLogging",
+                "s3:GetBucketLocation",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:GetAccelerateConfiguration",
+                "s3:GetBucketRequestPayment",
+                "s3:GetBucketWebsite",
+                "s3:GetReplicationConfiguration",
+                "s3:GetLifecycleConfiguration",
+                "s3:GetAnalyticsConfiguration",
+                "s3:GetInventoryConfiguration",
+                "s3:GetMetricsConfiguration",
+                "s3:GetIntelligentTieringConfiguration"
+            ],
+            "Resource": [
+                "arn:aws:s3:::ot-muse-*"
+            ]
         }
     ]
 }
