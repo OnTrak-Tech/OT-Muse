@@ -44,6 +44,16 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Backend Lambda
+        run: |
+          cd ../backend
+          bash deploy.sh
+
       - name: Terraform Init
         run: terraform init -input=false
 
