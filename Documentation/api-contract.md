@@ -2,16 +2,28 @@
 
 This document defines every REST and WebSocket endpoint, including request/response schemas, status codes, and authentication requirements.
 
-**Base URL**: `https://api.ot-muse.app` (API Gateway)
-**WebSocket URL**: `wss://ws.ot-muse.app`
+**Base URL**: `https://api.ot-muse.app` (API Gateway → Lambda)
+**WebSocket URL**: `wss://ws.ot-muse.app` (future)
 **Content-Type**: `application/json`
-**Authentication**: Bearer token (Cognito JWT) in `Authorization` header unless marked Public.
+**AI Models**: Amazon Nova Pro (text) + Nova Canvas (images) via Bedrock
+
+## Authentication
+
+Authentication is handled by **Auth.js v5** on the Next.js frontend, not by the backend API.
+
+- **Session Strategy**: JWT stored in `httpOnly` cookie (30-day expiry)
+- **Providers**: Google OAuth, GitHub OAuth, Discord OAuth, Credentials (email + password)
+- **CSRF**: Double-submit cookie (built into Auth.js)
+- **Backend Auth**: The Node.js backend validates the Auth.js session by calling the Next.js `/api/auth/session` endpoint, or by verifying the JWT directly using the shared `AUTH_SECRET`.
+
+The following auth endpoints are implemented **on the Next.js frontend** (not the Lambda backend):
 
 ---
 
 ## Table of Contents
 
-- [Authentication](#authentication)
+- [Authentication (Frontend)](#authentication-frontend)
+- [Onboarding](#onboarding)
 - [Worlds](#worlds)
 - [Generation](#generation)
 - [Collaboration](#collaboration)
@@ -23,54 +35,18 @@ This document defines every REST and WebSocket endpoint, including request/respo
 
 ---
 
-## Authentication
+## Authentication (Frontend)
 
-All authenticated endpoints require the following header:
-
-```
-Authorization: Bearer <cognito-jwt-token>
-```
-
-Tokens are obtained via Amazon Cognito after sign-up or login. Tokens expire after 1 hour; refresh tokens are valid for 30 days.
+> These endpoints are served by the Next.js app (Auth.js), **not** the Lambda backend.
 
 ---
 
-### `POST /auth/signup`
+### `POST /api/auth/signup`
 
-Register a new user account.
+Register a new user account. Validates with Zod, hashes password with bcrypt (12 rounds), stores in DynamoDB, sends 6-digit OTP via SES.
 
-**Auth**: Public
-
-**Request Body**:
-```json
-{
-  "email": "user@example.com",
-  "password": "SecureP@ss123",
-  "displayName": "WorldBuilder42"
-}
-```
-
-**Response** `201 Created`:
-```json
-{
-  "message": "Account created. Please verify your email.",
-  "userId": "usr_a1b2c3d4"
-}
-```
-
-**Errors**:
-| Status | Code | Description |
-|---|---|---|
-| `400` | `INVALID_INPUT` | Missing or malformed fields |
-| `409` | `EMAIL_EXISTS` | Email already registered |
-
----
-
-### `POST /auth/login`
-
-Authenticate an existing user.
-
-**Auth**: Public
+**Auth**: Public  
+**Served by**: Next.js frontend
 
 **Request Body**:
 ```json
@@ -80,57 +56,68 @@ Authenticate an existing user.
 }
 ```
 
-**Response** `200 OK`:
+**Response** `201 Created`:
 ```json
 {
-  "accessToken": "eyJhbGciOiJSUzI1NiIs...",
-  "refreshToken": "eyJjdHkiOiJKV1QiLCJl...",
-  "idToken": "eyJhbGciOiJSUzI1NiIs...",
-  "expiresIn": 3600,
-  "user": {
-    "userId": "usr_a1b2c3d4",
-    "email": "user@example.com",
-    "displayName": "WorldBuilder42"
-  }
+  "message": "Account created! Please check your email to verify your account."
 }
 ```
 
 **Errors**:
 | Status | Code | Description |
 |---|---|---|
-| `401` | `INVALID_CREDENTIALS` | Wrong email or password |
-| `403` | `UNVERIFIED_EMAIL` | Email not yet verified |
+| `400` | `INVALID_INPUT` | Zod validation failed (password must be 8+ chars with uppercase, lowercase, number, symbol) |
+| `409` | `EMAIL_EXISTS` | Email already registered |
 
 ---
 
-### `POST /auth/refresh`
+### `POST /api/auth/callback/credentials`
 
-Refresh an expired access token.
+Authenticate via email/password. Handled internally by Auth.js `signIn("credentials")`. Sets `httpOnly` JWT session cookie.
 
-**Auth**: Public
+**Auth**: Public  
+**Served by**: Next.js frontend (Auth.js)
+
+**Note**: OAuth login (Google, GitHub, Discord) is handled via `POST /api/auth/callback/{provider}` automatically by Auth.js.
+
+---
+
+### `POST /api/auth/verify`
+
+Verify email with 6-digit OTP code.
+
+**Auth**: Public  
+**Served by**: Next.js frontend
 
 **Request Body**:
 ```json
 {
-  "refreshToken": "eyJjdHkiOiJKV1QiLCJl..."
+  "email": "user@example.com",
+  "code": "123456"
 }
 ```
 
 **Response** `200 OK`:
 ```json
 {
-  "accessToken": "eyJhbGciOiJSUzI1NiIs...",
-  "expiresIn": 3600
+  "message": "Email verified. You can now log in."
 }
 ```
 
+**Errors**:
+| Status | Code | Description |
+|---|---|---|
+| `400` | `INVALID_CODE` | Wrong or expired OTP |
+| `404` | `NOT_FOUND` | No pending verification for this email |
+
 ---
 
-### `POST /auth/forgot-password`
+### `POST /api/auth/resend`
 
-Initiate a password reset.
+Resend a new OTP verification code.
 
-**Auth**: Public
+**Auth**: Public  
+**Served by**: Next.js frontend
 
 **Request Body**:
 ```json
@@ -142,33 +129,40 @@ Initiate a password reset.
 **Response** `200 OK`:
 ```json
 {
-  "message": "If that email exists, a reset link has been sent."
+  "message": "Verification code sent."
 }
 ```
 
 ---
 
-### `POST /auth/reset-password`
+## Onboarding
 
-Complete a password reset with the code from email.
+### `PUT /users/me/archetype`
 
-**Auth**: Public
+Save the user's selected professional domain. This changes the app vocabulary.
+
+**Auth**: Required  
+**Served by**: Next.js Server Action (`saveUserArchetype`)
 
 **Request Body**:
 ```json
 {
-  "email": "user@example.com",
-  "code": "123456",
-  "newPassword": "NewSecureP@ss456"
+  "archetype": "Architecture"
 }
 ```
+
+Valid values: `Architecture`, `Game Dev`, `Tabletop & Creative Writing`, `Urban Planning`, `Other`
 
 **Response** `200 OK`:
 ```json
 {
-  "message": "Password reset successful."
+  "success": true
 }
 ```
+
+**Side Effects**:
+- Sets `archetype` and `onboardingCompleted = true` on the user's DynamoDB record
+- Middleware will stop redirecting the user to `/onboarding`
 
 ---
 
@@ -446,9 +440,14 @@ Archive or unarchive a world.
 
 ## Generation
 
+> **AI Models Used**:
+> - **Amazon Nova Pro** (`amazon.nova-pro-v1:0`) — Expands user prompts into rich lore, descriptions, and world graph nodes
+> - **Amazon Nova Canvas** (`amazon.nova-canvas-v1:0`) — Generates world thumbnails and environment concept art
+> - Video and audio generation are **deferred** (not in hackathon MVP)
+
 ### `POST /worlds/:worldId/generate`
 
-Trigger the full multimodal generation pipeline for a new world or a major addition. Returns a job ID for tracking.
+Trigger the generation pipeline for a new world or a major addition. Returns a job ID for tracking.
 
 **Auth**: Required
 
