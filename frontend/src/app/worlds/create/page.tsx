@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { useSession } from "next-auth/react";
@@ -166,15 +166,15 @@ export default function CreateWorldPage() {
                                     {generationStages.map((stage) => (
                                         <div key={stage.name} className="flex items-center gap-3">
                                             <span className={`material-symbols-outlined text-[20px] ${stage.status === "completed" ? "text-primary" :
-                                                    stage.status === "in_progress" ? "text-primary animate-spin" :
-                                                        stage.status === "failed" ? "text-red-400" :
-                                                            "text-text-muted"
+                                                stage.status === "in_progress" ? "text-primary animate-spin" :
+                                                    stage.status === "failed" ? "text-red-400" :
+                                                        "text-text-muted"
                                                 }`}>
                                                 {getStageIcon(stage.status)}
                                             </span>
                                             <span className={`text-sm ${stage.status === "completed" ? "text-text-primary" :
-                                                    stage.status === "in_progress" ? "text-foreground font-medium" :
-                                                        "text-text-muted"
+                                                stage.status === "in_progress" ? "text-foreground font-medium" :
+                                                    "text-text-muted"
                                                 }`}>
                                                 {getStageLabel(stage.name)}
                                             </span>
@@ -288,8 +288,8 @@ export default function CreateWorldPage() {
                                     onClick={handleGenerate}
                                     disabled={isGenerating || !prompt.trim()}
                                     className={`font-bold py-4 px-12 rounded-xl shadow-lg transition-all transform flex items-center gap-3 ${isGenerating || !prompt.trim()
-                                            ? "bg-surface-elevated text-text-muted cursor-not-allowed shadow-none"
-                                            : "bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary text-white shadow-primary/30 hover:-translate-y-1"
+                                        ? "bg-surface-elevated text-text-muted cursor-not-allowed shadow-none"
+                                        : "bg-gradient-to-r from-primary to-primary-dark hover:from-primary-light hover:to-primary text-white shadow-primary/30 hover:-translate-y-1"
                                         }`}
                                 >
                                     <span className="material-symbols-outlined">
