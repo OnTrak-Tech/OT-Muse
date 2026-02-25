@@ -1,81 +1,147 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect, useCallback } from "react";
 import StatsCards from "@/components/dashboard/StatsCards";
 import WorldFilters from "@/components/dashboard/WorldFilters";
 import WorldCard from "@/components/dashboard/WorldCard";
 import Link from "next/link";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-    title: "My Worlds | OT-Muse",
-    description: "Manage your AI-generated worlds in OT-Muse",
-};
+import { useSession } from "next-auth/react";
+import { worldsApi, World } from "@/lib/api";
+import { getVocabulary } from "@/lib/domainVocabulary";
 
 export default function DashboardPage() {
-    // Mock data based on the original HTML mockups
-    const worlds = [
-        {
-            id: "w-1",
-            title: "Neo-Veridia Prime",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuA7kTTiFi9oB6z06zCGXUDgDnf5GXlP6jlUz1GB7ciqWW8re16ICT3x1K_ZxctsBWg51P7oMZut3q1kdpWkhNQgUE4jYy9wqA6DWP3w4t4fCczknd-pdDS7v1aqaamSMDHoU7aW-ECTVVe_nyTOMkI9ytf8ZvsUjLJ4IQl0Yh-Sm6_A-no_gHKYedGiMX-szSBvNC2unRQsyrEnh6E1xS6Z1ORMoIX1_KKpNmqV2uvuhmtgcqr3KszoWGTXml6rbC5AfPP-7GHSclM",
-            theme: "Sci-Fi",
-            lastEdited: "Edited 2 hours ago",
-            collaboratorCount: 3,
-            generationCount: 142
-        },
-        {
-            id: "w-2",
-            title: "The Whispering Glades",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAL-Yc_1vrzdKX5Mb3h5bC7_StsauWC3eYJdrEHySqoXrdvd9kZJULHdkd-zydl3ILem7-l30H3ACyjji6KTNdXP3ow_kw6AQ5WJvTMiezJY0bzKQrz0qlshmTTQmUt1IVlsUkaOj4reOdF4AKpkC0RpUJFiPEPFhDub0wKhsc7MYYbAZPlCehB1hN8LPsR9ERKXucqnR_DxAigbD_E0lZ_KUT9yvCNJ2Tq593m2AgcECDjTioZUlK7yIrJ_Y17BVTRwpGoumcgYxw",
-            theme: "Fantasy",
-            lastEdited: "Edited 1 day ago",
-            collaboratorCount: 1,
-            generationCount: 45
-        },
-        {
-            id: "w-3",
-            title: "Outpost 7: Mars",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDIK3vUS8BrmhS5Z7NIVTzjQUAASWLD5HDC8YN5AosZil7FOH0a_tBxRGI9axZ0DSQiCW2V57WlLNDvVbBDT7uL4wfxlRH4ckATRDojEu322i36DtPRf0QRz3itctwR-LBgmxt0leWEOOfC66uRD4u-C1lVsr8olKOU2G-EtilUcsDU7n22uuWSHpUVGVUx7oltMB4vG1B6a00rzKnPE6XXEc8Eu4gdbtunQ6DACmWLFW0j683_PEHx_gnsPFfG00mL9TNzUEAwfRs",
-            theme: "Space Opera",
-            lastEdited: "Edited 3 days ago",
-            collaboratorCount: 5,
-            generationCount: 312
-        },
-        {
-            id: "w-4",
-            title: "Gearheart City",
-            imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuC0UuB2x9k0khjjjeJcz1uL1r8HVDLm9QVJGhGpA-T2Kn3wrz-sZoMn06PuxGU3_TbE54qi3ju7PblD-7_Ke5QggMPp42Rxs-QqbbwqutqU4axBLfpTH70CDVH4ELUg0aZ-d6fkRzgGjJF9u0wO9qU_P6B28NLbC-dMTlwqhwSIQQ1Du3HG_K_humHo2-r207LImLB-UZ2DEvHONhSIeq-xP8NdlCfwrx2aOpJgW7zDtqPAmzpwMY0RwtRMQibHOXc3pphYu8w-ID8",
-            theme: "Steampunk",
-            lastEdited: "Edited last week",
-            collaboratorCount: 2,
-            generationCount: 89
+    const { data: session } = useSession();
+    const [worlds, setWorlds] = useState<World[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const archetype = (session?.user as { archetype?: string })?.archetype;
+    const vocab = getVocabulary(archetype);
+
+    const fetchWorlds = useCallback(async () => {
+        if (!session?.user) return;
+
+        try {
+            setLoading(true);
+            setError(null);
+            const user = session.user as { id?: string; email?: string };
+            const result = await worldsApi.list({}, {
+                userId: user.id,
+                userEmail: user.email ?? undefined,
+            });
+            setWorlds(result.worlds);
+        } catch (err) {
+            console.error("Failed to fetch worlds:", err);
+            setError("Could not load your " + vocab.worlds.toLowerCase() + ". The backend may not be running yet.");
+        } finally {
+            setLoading(false);
         }
-    ];
+    }, [session, vocab.worlds]);
+
+    useEffect(() => {
+        fetchWorlds();
+    }, [fetchWorlds]);
+
+    // Format dates for display
+    const formatDate = (dateStr: string) => {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffMs = now.getTime() - date.getTime();
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        if (diffHours < 1) return "Edited just now";
+        if (diffHours < 24) return `Edited ${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+        if (diffDays < 7) return `Edited ${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+        return `Edited ${date.toLocaleDateString()}`;
+    };
 
     return (
         <div className="pb-10">
-            <StatsCards />
+            <StatsCards
+                totalWorlds={worlds.length}
+                totalGenerations={worlds.reduce((sum, w) => sum + (w.generationCount ?? 0), 0)}
+                vocabWorlds={vocab.worlds}
+            />
             <WorldFilters />
 
-            {/* Grid Layout */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {worlds.map((world) => (
-                    <WorldCard key={world.id} {...world} />
-                ))}
-
-                {/* Create New Card (Placeholder) */}
-                <Link
-                    href="/worlds/create"
-                    className="group bg-transparent rounded-2xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 flex flex-col items-center justify-center h-full min-h-[340px]"
-                >
-                    <div className="w-16 h-16 rounded-full bg-surface-elevated group-hover:bg-primary/20 flex items-center justify-center mb-4 transition-colors">
-                        <span className="material-symbols-outlined text-3xl text-text-muted group-hover:text-primary">add</span>
+            {/* Loading State */}
+            {loading && (
+                <div className="flex items-center justify-center py-20">
+                    <div className="flex flex-col items-center gap-4">
+                        <span className="material-symbols-outlined text-4xl text-primary animate-spin">progress_activity</span>
+                        <p className="text-text-secondary">Loading your {vocab.worlds.toLowerCase()}...</p>
                     </div>
-                    <h3 className="text-lg font-bold text-foreground mb-2">Start a New World</h3>
-                    <p className="text-sm text-text-secondary group-hover:text-text-primary transition-colors text-center px-8">
-                        Generate a setting from scratch or use a template
-                    </p>
-                </Link>
-            </div>
+                </div>
+            )}
+
+            {/* Error State */}
+            {!loading && error && (
+                <div className="flex items-center justify-center py-20">
+                    <div className="flex flex-col items-center gap-4 max-w-md text-center">
+                        <span className="material-symbols-outlined text-4xl text-text-muted">cloud_off</span>
+                        <p className="text-text-secondary">{error}</p>
+                        <button
+                            onClick={fetchWorlds}
+                            className="text-primary hover:text-primary-light text-sm font-medium flex items-center gap-1"
+                        >
+                            <span className="material-symbols-outlined text-[16px]">refresh</span>
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Empty State */}
+            {!loading && !error && worlds.length === 0 && (
+                <div className="flex items-center justify-center py-20">
+                    <div className="flex flex-col items-center gap-4 max-w-md text-center">
+                        <span className="material-symbols-outlined text-6xl text-text-muted">explore</span>
+                        <h2 className="text-2xl font-bold text-foreground">No {vocab.worlds.toLowerCase()} yet</h2>
+                        <p className="text-text-secondary">
+                            Create your first {vocab.world.toLowerCase()} to get started with AI-powered generation.
+                        </p>
+                        <Link
+                            href="/worlds/create"
+                            className="mt-2 bg-primary hover:bg-primary-light text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center gap-2"
+                        >
+                            <span className="material-symbols-outlined">add</span>
+                            {vocab.createWorld}
+                        </Link>
+                    </div>
+                </div>
+            )}
+
+            {/* Grid Layout */}
+            {!loading && !error && worlds.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {worlds.map((world) => (
+                        <WorldCard
+                            key={world.worldId}
+                            title={world.title}
+                            imageUrl={world.thumbnailUrl || ""}
+                            theme={world.style}
+                            lastEdited={formatDate(world.updatedAt)}
+                            collaboratorCount={world.collaboratorCount ?? 0}
+                            generationCount={world.generationCount ?? 0}
+                        />
+                    ))}
+
+                    {/* Create New Card */}
+                    <Link
+                        href="/worlds/create"
+                        className="group bg-transparent rounded-2xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 flex flex-col items-center justify-center h-full min-h-[340px]"
+                    >
+                        <div className="w-16 h-16 rounded-full bg-surface-elevated group-hover:bg-primary/20 flex items-center justify-center mb-4 transition-colors">
+                            <span className="material-symbols-outlined text-3xl text-text-muted group-hover:text-primary">add</span>
+                        </div>
+                        <h3 className="text-lg font-bold text-foreground mb-2">{vocab.createWorld}</h3>
+                        <p className="text-sm text-text-secondary group-hover:text-text-primary transition-colors text-center px-8">
+                            Generate a setting from scratch or use a template
+                        </p>
+                    </Link>
+                </div>
+            )}
         </div>
     );
 }
