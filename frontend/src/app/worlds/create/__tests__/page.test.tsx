@@ -7,6 +7,22 @@ jest.mock("next-auth/react", () => ({
     useSession: () => ({ data: { user: { archetype: "Sci-Fi" } }, status: "authenticated" }),
 }));
 
+// Mock next/navigation
+jest.mock("next/navigation", () => ({
+    useRouter: () => ({ push: jest.fn() }),
+}));
+
+// Mock the API
+jest.mock("@/lib/api", () => ({
+    worldsApi: {
+        create: jest.fn(),
+    },
+    generationApi: {
+        generate: jest.fn(),
+        getJob: jest.fn(),
+    }
+}));
+
 // Mock child components
 jest.mock("@/components/dashboard/Sidebar", () => {
     return function MockSidebar() {
@@ -35,10 +51,10 @@ describe("CreateWorldPage", () => {
 
     it("updates prompt state when typing in the textarea", () => {
         render(<CreateWorldPage />);
-        const textarea = screen.getByPlaceholderText(/In a realm where gravity is optional/i) as HTMLTextAreaElement;
+        const textarea = screen.getByRole("textbox");
 
         fireEvent.change(textarea, { target: { value: "A futuristic city under a dome." } });
-        expect(textarea.value).toBe("A futuristic city under a dome.");
+        expect((textarea as HTMLTextAreaElement).value).toBe("A futuristic city under a dome.");
     });
 
     it("displays the default archetype and a change button", () => {
@@ -73,7 +89,9 @@ describe("CreateWorldPage", () => {
 
     it("renders the primary generate button", () => {
         render(<CreateWorldPage />);
-        const generateBtn = screen.getByRole("button", { name: /auto_awesome GENERATE WORLD/i });
+        // Text is derived from vocabulary, since archetype is "Sci-Fi", fallback is Game Dev: "GENERATE WORLD"
+        // Also contains "auto_awesome" icon text
+        const generateBtn = screen.getByRole("button", { name: /auto_awesome GENERATE WORLD/i }) || screen.getByRole("button", { name: /GENERATE WORLD/i });
         expect(generateBtn).toBeInTheDocument();
     });
 });
