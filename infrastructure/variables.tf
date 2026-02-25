@@ -14,3 +14,15 @@ variable "ses_from_email" {
   description = "Verified email address for sending transactional emails"
   type        = string
 }
+
+variable "s3_assets_bucket_name" {
+  description = "Name of the S3 bucket for generated assets"
+  type        = string
+  default     = "ot-muse-assets"
+}
+
+variable "s3_allowed_origins" {
+  description = "Allowed CORS origins for frontend access to S3"
+  type        = list(string)
+  default     = ["https://main.d23iuljt6mvkva.amplifyapp.com", "http://localhost:3000"]
+}
