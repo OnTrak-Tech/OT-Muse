@@ -12,7 +12,7 @@ export default function PricingCards() {
             <div className="text-center mb-16">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-foreground">
                     Build your world <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">without boundaries.</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">without boundaries.</span>
                 </h1>
                 <p className="text-lg text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
                     Choose the perfect plan for your storytelling needs. From solo creators to studio teams, we scale with your imagination.
@@ -59,7 +59,7 @@ export default function PricingCards() {
                             </li>
                             <li className="flex items-start gap-3 text-sm text-foreground">
                                 <span className="material-symbols-outlined text-green-500 text-[18px] shrink-0">check</span>
-                                <span>Token-limited AI Text (24hr cooldown)</span>
+                                <span>Token-limited AI Text</span>
                             </li>
                             <li className="flex items-start gap-3 text-sm text-foreground">
                                 <span className="material-symbols-outlined text-green-500 text-[18px] shrink-0">check</span>
@@ -71,11 +71,7 @@ export default function PricingCards() {
                             </li>
                             <li className="flex items-start gap-3 text-sm text-text-muted opacity-50">
                                 <span className="material-symbols-outlined text-text-muted text-[18px] shrink-0">close</span>
-                                <span>AI Image Generation</span>
-                            </li>
-                            <li className="flex items-start gap-3 text-sm text-text-muted opacity-50">
-                                <span className="material-symbols-outlined text-text-muted text-[18px] shrink-0">close</span>
-                                <span>Team Collaboration</span>
+                                <span>Collaboration</span>
                             </li>
                         </ul>
                     </div>
@@ -91,7 +87,7 @@ export default function PricingCards() {
                             Pro
                             <span className="material-symbols-outlined text-primary text-[18px]">auto_awesome</span>
                         </h3>
-                        <p className="text-sm text-text-secondary">For serious writers and game masters who need power.</p>
+                        <p className="text-sm text-text-secondary">For engineers, architects, and game masters who need power.</p>
                     </div>
                     <div className="mb-8">
                         <div className="flex items-baseline">
@@ -128,7 +124,7 @@ export default function PricingCards() {
                             </li>
                             <li className="flex items-start gap-3 text-sm text-text-muted opacity-50">
                                 <span className="material-symbols-outlined text-text-muted text-[18px] shrink-0">close</span>
-                                <span>Team Collaboration</span>
+                                <span>Collaboration</span>
                             </li>
                         </ul>
                     </div>
