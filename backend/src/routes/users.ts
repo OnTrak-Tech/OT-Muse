@@ -14,22 +14,33 @@ userRoutes.use(requireAuth);
 // ---------------------------------------------------------------------------
 userRoutes.get("/me", async (req: AuthenticatedRequest, res, next) => {
     try {
-        // Try fetching by user ID first, then by email
         const userId = req.userId!;
         const email = req.userEmail;
 
-        // The Auth.js adapter stores users with pk: USER#<email>
-        // We need to look up by ID or email
+        // The Auth.js DynamoDB adapter stores:
+        //   OAuth users  → pk: USER#<uuid>,  sk: USER#<uuid>
+        //   Creds users  → pk: USER#<email>, sk: USER#<email>
+        // We try both key formats to find the user record.
         let userRecord;
 
-        if (email) {
-            const result = await dynamodb.send(
+        // Try by userId (UUID) first — covers OAuth users
+        const byId = await dynamodb.send(
+            new GetCommand({
+                TableName: USERS_TABLE,
+                Key: { pk: `USER#${userId}`, sk: `USER#${userId}` },
+            })
+        );
+        userRecord = byId.Item;
+
+        // If not found by UUID, try by email — covers Credentials users
+        if (!userRecord && email) {
+            const byEmail = await dynamodb.send(
                 new GetCommand({
                     TableName: USERS_TABLE,
                     Key: { pk: `USER#${email}`, sk: `USER#${email}` },
                 })
             );
-            userRecord = result.Item;
+            userRecord = byEmail.Item;
         }
 
         if (!userRecord) {
@@ -63,9 +74,40 @@ userRoutes.get("/me", async (req: AuthenticatedRequest, res, next) => {
 // ---------------------------------------------------------------------------
 userRoutes.put("/me", async (req: AuthenticatedRequest, res, next) => {
     try {
+        const userId = req.userId!;
         const email = req.userEmail;
-        if (!email) {
-            throw new ApiError(400, "INVALID_INPUT", "User email is required for profile updates.");
+
+        // Determine the correct DynamoDB key for this user.
+        // OAuth users  → pk: USER#<uuid>
+        // Creds users  → pk: USER#<email>
+        let userKey: string | null = null;
+
+        // Try UUID first
+        const byId = await dynamodb.send(
+            new GetCommand({
+                TableName: USERS_TABLE,
+                Key: { pk: `USER#${userId}`, sk: `USER#${userId}` },
+            })
+        );
+        if (byId.Item) {
+            userKey = userId;
+        }
+
+        // Fall back to email
+        if (!userKey && email) {
+            const byEmail = await dynamodb.send(
+                new GetCommand({
+                    TableName: USERS_TABLE,
+                    Key: { pk: `USER#${email}`, sk: `USER#${email}` },
+                })
+            );
+            if (byEmail.Item) {
+                userKey = email;
+            }
+        }
+
+        if (!userKey) {
+            throw new ApiError(404, "NOT_FOUND", "User profile not found.");
         }
 
         const { displayName, preferences, archetype } = req.body;
@@ -94,14 +136,13 @@ userRoutes.put("/me", async (req: AuthenticatedRequest, res, next) => {
             new UpdateCommand({
                 TableName: USERS_TABLE,
                 Key: {
-                    pk: `USER#${email}`,
-                    sk: `USER#${email}`,
+                    pk: `USER#${userKey}`,
+                    sk: `USER#${userKey}`,
                 },
                 UpdateExpression: `SET ${expressionParts.join(", ")}`,
                 ExpressionAttributeNames: names,
                 ExpressionAttributeValues: values,
                 ReturnValues: "ALL_NEW",
-                ConditionExpression: "attribute_exists(pk)",
             })
         );
 

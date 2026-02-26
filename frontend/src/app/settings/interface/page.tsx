@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { usersApi } from "@/lib/api";
+import { useTheme } from "next-themes";
 
 export default function InterfaceSettingsPage() {
     const { data: session } = useSession();
     const user = session?.user as { id?: string; email?: string } | undefined;
+    const { setTheme } = useTheme();
 
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -30,6 +32,9 @@ export default function InterfaceSettingsPage() {
                 const data = await usersApi.getMe({ userId: user.id, userEmail: user.email });
                 if (data.preferences) {
                     setPreferences(prev => ({ ...prev, ...data.preferences }));
+                    if (data.preferences.theme) {
+                        setTheme(String(data.preferences.theme).toLowerCase());
+                    }
                 }
             } catch (error) {
                 console.error("Failed to fetch user profile", error);
@@ -41,7 +46,7 @@ export default function InterfaceSettingsPage() {
         if (user) {
             fetchProfile();
         }
-    }, [user]);
+    }, [user, setTheme]);
 
     const handleSave = async () => {
         if (!user?.id || !user?.email) return;
@@ -67,6 +72,11 @@ export default function InterfaceSettingsPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handlePreferenceChange = (key: string, value: any) => {
         setPreferences(prev => ({ ...prev, [key]: value }));
+
+        // Immediately apply themes globally without waiting for DB save
+        if (key === "theme") {
+            setTheme(String(value).toLowerCase());
+        }
     };
 
     if (isLoading) {

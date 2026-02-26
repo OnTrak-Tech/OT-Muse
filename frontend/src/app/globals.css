@@ -2,19 +2,19 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #0A0F0D;
-  --color-foreground: #E8F5F0;
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
   --color-primary: #10B981;
   --color-primary-light: #34D399;
   --color-primary-dark: #059669;
   --color-primary-muted: rgba(16, 185, 129, 0.15);
-  --color-surface: #111916;
-  --color-surface-elevated: #162420;
-  --color-border: #1E3A30;
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border);
   --color-border-active: #10B981;
-  --color-text-primary: #E8F5F0;
-  --color-text-secondary: #94B8AA;
-  --color-text-muted: #5E8A78;
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
   --font-sans: 'Space Grotesk', sans-serif;
 }
 
@@ -37,8 +37,45 @@
   background: var(--color-text-muted);
 }
 
+}
+
+/* Theme definitions */
+:root, .dark {
+  --bg: #0A0F0D;
+  --fg: #E8F5F0;
+  --surface: #111916;
+  --surface-elevated: #162420;
+  --border: #1E3A30;
+  --text-primary: #E8F5F0;
+  --text-secondary: #94B8AA;
+  --text-muted: #5E8A78;
+}
+
+.light {
+  --bg: #F8FAFC;
+  --fg: #0F172A;
+  --surface: #FFFFFF;
+  --surface-elevated: #F1F5F9;
+  --border: #E2E8F0;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+}
+
+.oled {
+  --bg: #000000;
+  --fg: #E8F5F0;
+  --surface: #040605;
+  --surface-elevated: #080D0B;
+  --border: #1A3026;
+  --text-primary: #E8F5F0;
+  --text-secondary: #94B8AA;
+  --text-muted: #5E8A78;
+}
+
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
