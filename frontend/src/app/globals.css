@@ -37,10 +37,9 @@
   background: var(--color-text-muted);
 }
 
-}
-
 /* Theme definitions */
-:root, .dark {
+:root,
+.dark {
   --bg: #0A0F0D;
   --fg: #E8F5F0;
   --surface: #111916;
