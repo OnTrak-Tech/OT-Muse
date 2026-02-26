@@ -6,7 +6,7 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { worldsApi, generationApi } from "@/lib/api";
-import { getVocabulary, getArchetypes } from "@/lib/domainVocabulary";
+import { getVocabulary } from "@/lib/domainVocabulary";
 
 type GenerationStage = {
     name: string;
@@ -22,7 +22,9 @@ export default function CreateWorldPage() {
     const [generationProgress, setGenerationProgress] = useState(0);
     const [generationError, setGenerationError] = useState<string | null>(null);
     const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [localArchetype, setLocalArchetype] = useState<string | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isArchetypeModalOpen, setIsArchetypeModalOpen] = useState(false);
 
     // Use local archetype override if set, otherwise fallback to user's profile archetype or Game Dev

@@ -13,6 +13,7 @@ export default function AIEngineSettingsPage() {
     const [saveMessage, setSaveMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     // Form state
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [preferences, setPreferences] = useState<Record<string, any>>({
         highQualityGenerations: true,
         defaultArtStyle: "Sci-Fi Realism",
@@ -53,14 +54,15 @@ export default function AIEngineSettingsPage() {
 
             setSaveMessage({ type: "success", text: "Settings saved successfully!" });
             setTimeout(() => setSaveMessage(null), 3000);
-        } catch (error: any) {
+        } catch (error) {
             console.error("Failed to save settings", error);
-            setSaveMessage({ type: "error", text: error.message || "Failed to save settings" });
+            setSaveMessage({ type: "error", text: error instanceof Error ? error.message : "Failed to save settings" });
         } finally {
             setIsSaving(false);
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handlePreferenceChange = (key: string, value: any) => {
         setPreferences(prev => ({ ...prev, [key]: value }));
     };
