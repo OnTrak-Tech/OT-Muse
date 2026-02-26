@@ -8,16 +8,20 @@ import { useTheme } from "next-themes";
 export default function InterfaceSettingsPage() {
     const { data: session } = useSession();
     const user = session?.user as { id?: string; email?: string } | undefined;
-    const { setTheme } = useTheme();
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-    // Form state
+    // Form state (excluding theme, which is handled locally by next-themes)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [preferences, setPreferences] = useState<Record<string, any>>({
-        theme: "Dark",
         canvasPerformance: "Balanced",
         compactSidebar: false,
         showGridlines: true,
@@ -31,10 +35,10 @@ export default function InterfaceSettingsPage() {
             try {
                 const data = await usersApi.getMe({ userId: user.id, userEmail: user.email });
                 if (data.preferences) {
-                    setPreferences(prev => ({ ...prev, ...data.preferences }));
-                    if (data.preferences.theme) {
-                        setTheme(String(data.preferences.theme).toLowerCase());
-                    }
+                    // Filter out theme if it's still in the DB from older versions
+                    const dbPreferences = { ...data.preferences };
+                    delete dbPreferences.theme;
+                    setPreferences(prev => ({ ...prev, ...dbPreferences }));
                 }
             } catch (error) {
                 console.error("Failed to fetch user profile", error);
@@ -46,7 +50,7 @@ export default function InterfaceSettingsPage() {
         if (user) {
             fetchProfile();
         }
-    }, [user, setTheme]);
+    }, [user]);
 
     const handleSave = async () => {
         if (!user?.id || !user?.email) return;
@@ -72,11 +76,6 @@ export default function InterfaceSettingsPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handlePreferenceChange = (key: string, value: any) => {
         setPreferences(prev => ({ ...prev, [key]: value }));
-
-        // Immediately apply themes globally without waiting for DB save
-        if (key === "theme") {
-            setTheme(String(value).toLowerCase());
-        }
     };
 
     if (isLoading) {
@@ -113,14 +112,14 @@ export default function InterfaceSettingsPage() {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {/* System Theme */}
                                 <button
-                                    onClick={() => handlePreferenceChange("theme", "System")}
-                                    className={`group flex flex-col gap-3 p-4 rounded-xl border-2 transition-all text-left relative ${preferences.theme === "System" ? "border-primary bg-primary/10" : "border-border bg-surface-elevated hover:border-primary/50"}`}
+                                    onClick={() => setTheme("system")}
+                                    className={`group flex flex-col gap-3 p-4 rounded-xl border-2 transition-all text-left relative ${mounted && theme === "system" ? "border-primary bg-primary/10" : "border-border bg-surface-elevated hover:border-primary/50"}`}
                                 >
                                     <div className="aspect-video w-full rounded-md bg-gradient-to-br from-slate-200 to-slate-800 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
                                         <span className="material-symbols-outlined text-white">devices</span>
                                     </div>
-                                    <span className={`text-sm font-medium ${preferences.theme === "System" ? "text-white" : "text-text-secondary group-hover:text-foreground"}`}>System</span>
-                                    {preferences.theme === "System" && (
+                                    <span className={`text-sm font-medium ${mounted && theme === "system" ? "text-white" : "text-text-secondary group-hover:text-foreground"}`}>System</span>
+                                    {mounted && theme === "system" && (
                                         <div className="absolute top-2 right-2 size-5 bg-primary rounded-full flex items-center justify-center">
                                             <span className="material-symbols-outlined text-white text-[14px]">check</span>
                                         </div>
@@ -128,14 +127,14 @@ export default function InterfaceSettingsPage() {
                                 </button>
                                 {/* Light Theme */}
                                 <button
-                                    onClick={() => handlePreferenceChange("theme", "Light")}
-                                    className={`group flex flex-col gap-3 p-4 rounded-xl border-2 transition-all text-left relative ${preferences.theme === "Light" ? "border-primary bg-primary/10" : "border-border bg-surface-elevated hover:border-primary/50"}`}
+                                    onClick={() => setTheme("light")}
+                                    className={`group flex flex-col gap-3 p-4 rounded-xl border-2 transition-all text-left relative ${mounted && theme === "light" ? "border-primary bg-primary/10" : "border-border bg-surface-elevated hover:border-primary/50"}`}
                                 >
                                     <div className="aspect-video w-full rounded-md bg-white border border-border flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
                                         <span className="material-symbols-outlined text-slate-400">light_mode</span>
                                     </div>
-                                    <span className={`text-sm font-medium ${preferences.theme === "Light" ? "text-white" : "text-text-secondary group-hover:text-foreground"}`}>Light</span>
-                                    {preferences.theme === "Light" && (
+                                    <span className={`text-sm font-medium ${mounted && theme === "light" ? "text-white" : "text-text-secondary group-hover:text-foreground"}`}>Light</span>
+                                    {mounted && theme === "light" && (
                                         <div className="absolute top-2 right-2 size-5 bg-primary rounded-full flex items-center justify-center">
                                             <span className="material-symbols-outlined text-white text-[14px]">check</span>
                                         </div>
@@ -143,14 +142,14 @@ export default function InterfaceSettingsPage() {
                                 </button>
                                 {/* Dark Theme */}
                                 <button
-                                    onClick={() => handlePreferenceChange("theme", "Dark")}
-                                    className={`group flex flex-col gap-3 p-4 rounded-xl border-2 transition-all text-left relative ${preferences.theme === "Dark" ? "border-primary bg-primary/10" : "border-border bg-surface-elevated hover:border-primary/50"}`}
+                                    onClick={() => setTheme("dark")}
+                                    className={`group flex flex-col gap-3 p-4 rounded-xl border-2 transition-all text-left relative ${mounted && theme === "dark" ? "border-primary bg-primary/10" : "border-border bg-surface-elevated hover:border-primary/50"}`}
                                 >
                                     <div className="aspect-video w-full rounded-md bg-background border border-border flex items-center justify-center">
                                         <span className="material-symbols-outlined text-primary">dark_mode</span>
                                     </div>
-                                    <span className={`text-sm font-medium ${preferences.theme === "Dark" ? "text-white" : "text-text-secondary group-hover:text-foreground"}`}>Dark</span>
-                                    {preferences.theme === "Dark" && (
+                                    <span className={`text-sm font-medium ${mounted && theme === "dark" ? "text-white" : "text-text-secondary group-hover:text-foreground"}`}>Dark</span>
+                                    {mounted && theme === "dark" && (
                                         <div className="absolute top-2 right-2 size-5 bg-primary rounded-full flex items-center justify-center">
                                             <span className="material-symbols-outlined text-white text-[14px]">check</span>
                                         </div>
@@ -158,14 +157,14 @@ export default function InterfaceSettingsPage() {
                                 </button>
                                 {/* OLED Theme */}
                                 <button
-                                    onClick={() => handlePreferenceChange("theme", "OLED")}
-                                    className={`group flex flex-col gap-3 p-4 rounded-xl border-2 transition-all text-left relative ${preferences.theme === "OLED" ? "border-primary bg-primary/10" : "border-border bg-surface-elevated hover:border-primary/50"}`}
+                                    onClick={() => setTheme("oled")}
+                                    className={`group flex flex-col gap-3 p-4 rounded-xl border-2 transition-all text-left relative ${mounted && theme === "oled" ? "border-primary bg-primary/10" : "border-border bg-surface-elevated hover:border-primary/50"}`}
                                 >
                                     <div className="aspect-video w-full rounded-md bg-black flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
                                         <span className="material-symbols-outlined text-slate-500">brightness_low</span>
                                     </div>
-                                    <span className={`text-sm font-medium ${preferences.theme === "OLED" ? "text-white" : "text-text-secondary group-hover:text-foreground"}`}>OLED</span>
-                                    {preferences.theme === "OLED" && (
+                                    <span className={`text-sm font-medium ${mounted && theme === "oled" ? "text-white" : "text-text-secondary group-hover:text-foreground"}`}>OLED</span>
+                                    {mounted && theme === "oled" && (
                                         <div className="absolute top-2 right-2 size-5 bg-primary rounded-full flex items-center justify-center">
                                             <span className="material-symbols-outlined text-white text-[14px]">check</span>
                                         </div>
