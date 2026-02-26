@@ -151,6 +151,10 @@ export default function PricingCards() {
                         <ul className="space-y-4">
                             <li className="flex items-start gap-3 text-sm text-foreground">
                                 <span className="material-symbols-outlined text-purple-500 text-[18px] shrink-0">verified</span>
+                                <span><strong>Collaboration</strong></span>
+                            </li>
+                            <li className="flex items-start gap-3 text-sm text-foreground">
+                                <span className="material-symbols-outlined text-purple-500 text-[18px] shrink-0">verified</span>
                                 <span><strong>Team Roles &amp; Permissions</strong></span>
                             </li>
                             <li className="flex items-start gap-3 text-sm text-foreground">
