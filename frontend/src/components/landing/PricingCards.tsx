@@ -55,7 +55,7 @@ export default function PricingCards() {
                         <ul className="space-y-4">
                             <li className="flex items-start gap-3 text-sm text-foreground">
                                 <span className="material-symbols-outlined text-green-500 text-[18px] shrink-0">check</span>
-                                <span>1 World Project</span>
+                                <span>1 Project</span>
                             </li>
                             <li className="flex items-start gap-3 text-sm text-foreground">
                                 <span className="material-symbols-outlined text-green-500 text-[18px] shrink-0">check</span>
