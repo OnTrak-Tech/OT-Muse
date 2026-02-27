@@ -11,9 +11,6 @@ export default function Sidebar() {
         <aside className="hidden lg:flex flex-col w-72 h-screen border-r border-border bg-background fixed left-0 top-0 z-50">
             {/* Logo Area */}
             <div className="p-6 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
-                    <span className="material-symbols-outlined text-white text-[20px]">auto_awesome</span>
-                </div>
                 <h1 className="text-xl font-bold tracking-tight text-foreground">OT-Muse</h1>
             </div>
 

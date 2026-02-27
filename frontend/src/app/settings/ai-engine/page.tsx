@@ -97,9 +97,6 @@ export default function AIEngineSettingsPage() {
                         <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
                             <div className="flex items-start justify-between gap-4">
                                 <div className="flex items-start gap-4">
-                                    <div className="text-primary bg-primary/10 flex items-center justify-center rounded-lg shrink-0 size-12">
-                                        <span className="material-symbols-outlined text-[24px]">auto_awesome</span>
-                                    </div>
                                     <div className="flex flex-col">
                                         <h3 className="text-foreground text-lg font-semibold leading-normal">High-Quality Generations</h3>
                                         <p className="text-text-secondary text-sm leading-relaxed mt-1 max-w-md">

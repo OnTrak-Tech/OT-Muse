@@ -7,10 +7,10 @@ export function ThemeProvider({ children, ...props }: React.ComponentProps<typeo
     return (
         <NextThemesProvider
             attribute="class"
-            defaultTheme="System"
+            defaultTheme="system"
             enableSystem
             disableTransitionOnChange
-            themes={["System", "Light", "Dark", "OLED"]}
+            themes={["system", "light", "dark", "oled"]}
             {...props}
         >
             {children}
