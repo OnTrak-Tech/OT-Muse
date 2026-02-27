@@ -19,7 +19,7 @@ import {
 
 export default function Hero() {
     return (
-        <header className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-[#0A0F0D]">
+        <header className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-background">
             {/* Background decorative glows */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full pointer-events-none">
                 <div className="absolute top-20 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[100px] opacity-50 animate-pulse"></div>
@@ -27,7 +27,7 @@ export default function Hero() {
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight text-white">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight text-foreground">
                     Your Imagination, <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">
                         Architected.
@@ -47,7 +47,7 @@ export default function Hero() {
                         Enter the Editor
                         <MdArrowForward className="group-hover:translate-x-1 transition-transform" />
                     </Link>
-                    <button className="bg-surface-elevated hover:bg-surface border border-white/10 text-white px-8 py-4 rounded-lg text-base font-semibold transition-all flex items-center gap-2 hover:border-primary/50">
+                    <button className="bg-surface-elevated hover:bg-surface border border-border text-foreground px-8 py-4 rounded-lg text-base font-semibold transition-all flex items-center gap-2 hover:border-primary/50">
                         <MdPlayCircle className="text-xl text-primary" />
                         Watch Demo
                     </button>
@@ -56,7 +56,7 @@ export default function Hero() {
 
             {/* THE EDITOR MOCKUP */}
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative">
-                <div className="relative rounded-xl border border-white/10 bg-[#161b22] shadow-2xl overflow-hidden aspect-[16/9] lg:aspect-[21/9] transform lg:rotate-x-2 hover:rotate-0 transition-transform duration-700 group perspective-1000">
+                <div className="relative rounded-xl border border-border bg-surface-elevated shadow-2xl overflow-hidden aspect-[16/9] lg:aspect-[21/9] transform lg:rotate-x-2 hover:rotate-0 transition-transform duration-700 group perspective-1000">
                     {/* Mockup Toolbar */}
                     <div className="h-12 border-b border-white/10 bg-[#0d1117] flex items-center justify-between px-4">
                         <div className="flex items-center gap-2">
@@ -79,32 +79,32 @@ export default function Hero() {
                     {/* Mockup Body */}
                     <div className="flex h-full">
                         {/* Sidebar (Left) */}
-                        <div className="w-64 border-r border-white/10 bg-[#0d1117] p-4 hidden md:flex flex-col gap-4">
+                        <div className="w-64 border-r border-border bg-surface p-4 hidden md:flex flex-col gap-4">
                             <div className="flex items-center justify-between text-xs font-bold uppercase text-text-muted tracking-wider mb-2">
                                 Assets
-                                <MdAdd className="text-sm cursor-pointer hover:text-white" />
+                                <MdAdd className="text-sm cursor-pointer hover:text-foreground" />
                             </div>
                             <div className="space-y-1">
-                                <div className="p-2 rounded hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-text-secondary hover:text-white transition-colors">
+                                <div className="p-2 rounded hover:bg-surface-elevated cursor-pointer flex items-center gap-3 text-sm text-text-secondary hover:text-foreground transition-colors">
                                     <MdFolder className="text-primary text-base" /> Characters
                                 </div>
                                 <div className="p-2 rounded bg-primary/10 border-l-2 border-primary cursor-pointer flex items-center gap-3 text-sm font-medium text-primary">
                                     <MdFolderOpen className="text-base" /> Locations
                                 </div>
-                                <div className="pl-9 text-xs text-text-muted py-1 cursor-pointer hover:text-white transition-colors">
+                                <div className="pl-9 text-xs text-text-muted py-1 cursor-pointer hover:text-foreground transition-colors">
                                     The Crystal Spire
                                 </div>
-                                <div className="pl-9 text-xs text-text-muted py-1 cursor-pointer hover:text-white transition-colors">
+                                <div className="pl-9 text-xs text-text-muted py-1 cursor-pointer hover:text-foreground transition-colors">
                                     Sunken Market
                                 </div>
-                                <div className="p-2 rounded hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-text-secondary hover:text-white transition-colors">
+                                <div className="p-2 rounded hover:bg-surface-elevated cursor-pointer flex items-center gap-3 text-sm text-text-secondary hover:text-foreground transition-colors">
                                     <MdFolder className="text-orange-400 text-base" /> Factions
                                 </div>
-                                <div className="p-2 rounded hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-text-secondary hover:text-white transition-colors">
+                                <div className="p-2 rounded hover:bg-surface-elevated cursor-pointer flex items-center gap-3 text-sm text-text-secondary hover:text-foreground transition-colors">
                                     <MdAutoAwesome className="text-purple-400 text-base" /> Lore Endine
                                 </div>
                             </div>
-                            <div className="mt-auto border-t border-white/10 pt-4">
+                            <div className="mt-auto border-t border-border pt-4">
                                 <div className="text-xs font-mono text-text-muted mb-2">
                                     AI TOKENS: 8,402 / 10k
                                 </div>
@@ -115,7 +115,7 @@ export default function Hero() {
                         </div>
 
                         {/* Main Canvas (Center) */}
-                        <div className="flex-1 relative bg-[#0b0e14] overflow-hidden mockup-scroll group-hover:cursor-grab active:cursor-grabbing">
+                        <div className="flex-1 relative bg-background overflow-hidden mockup-scroll group-hover:cursor-grab active:cursor-grabbing">
                             {/* Grid Pattern Background */}
                             <div
                                 className="absolute inset-0 opacity-10 pointer-events-none"
@@ -154,9 +154,9 @@ export default function Hero() {
                                 </svg>
 
                                 {/* Center Node */}
-                                <div className="absolute top-[300px] left-[400px] -translate-x-1/2 -translate-y-1/2 w-64 bg-[#161b22] border border-primary shadow-[0_0_30px_rgba(16,185,129,0.15)] rounded-lg p-4 z-10 group cursor-pointer hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] transition-shadow">
+                                <div className="absolute top-[300px] left-[400px] -translate-x-1/2 -translate-y-1/2 w-64 bg-surface-elevated border border-primary shadow-[0_0_30px_rgba(16,185,129,0.15)] rounded-lg p-4 z-10 group cursor-pointer hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] transition-shadow">
                                     <div className="flex justify-between items-start mb-2">
-                                        <h3 className="font-bold text-white flex items-center gap-2">
+                                        <h3 className="font-bold text-foreground flex items-center gap-2">
                                             <MdPlace className="text-primary text-sm" /> Capital City
                                         </h3>
                                         <span className="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-mono">
@@ -179,38 +179,38 @@ export default function Hero() {
                                         </span>
                                     </div>
                                     {/* Connector dots */}
-                                    <div className="absolute top-1/2 -right-1.5 w-3 h-3 bg-primary rounded-full border-2 border-[#0b0e14]"></div>
+                                    <div className="absolute top-1/2 -right-1.5 w-3 h-3 bg-primary rounded-full border-2 border-background"></div>
                                 </div>
 
                                 {/* Linked Node 1 */}
-                                <div className="absolute top-[150px] left-[650px] -translate-x-1/2 -translate-y-1/2 w-48 bg-[#0d1117] border border-white/10 hover:border-primary/50 rounded-lg p-3 z-10 cursor-pointer transition-colors">
+                                <div className="absolute top-[150px] left-[650px] -translate-x-1/2 -translate-y-1/2 w-48 bg-surface border border-border hover:border-primary/50 rounded-lg p-3 z-10 cursor-pointer transition-colors">
                                     <div className="flex justify-between items-start mb-1">
-                                        <h4 className="font-semibold text-white/90 text-sm">
+                                        <h4 className="font-semibold text-foreground/90 text-sm">
                                             Iron District
                                         </h4>
                                     </div>
                                     <p className="text-[10px] text-text-muted leading-relaxed">
                                         Industrial zone, heavy pollution, worker unrest.
                                     </p>
-                                    <div className="absolute top-1/2 -left-1.5 w-3 h-3 bg-text-muted rounded-full border-2 border-[#0b0e14]"></div>
-                                    <div className="absolute top-1/2 -right-1.5 w-3 h-3 bg-text-muted rounded-full border-2 border-[#0b0e14]"></div>
+                                    <div className="absolute top-1/2 -left-1.5 w-3 h-3 bg-text-muted rounded-full border-2 border-background"></div>
+                                    <div className="absolute top-1/2 -right-1.5 w-3 h-3 bg-text-muted rounded-full border-2 border-background"></div>
                                 </div>
 
                                 {/* Linked Node 2 */}
-                                <div className="absolute top-[450px] left-[650px] -translate-x-1/2 -translate-y-1/2 w-48 bg-[#0d1117] border border-white/10 hover:border-primary/50 rounded-lg p-3 z-10 cursor-pointer transition-colors">
+                                <div className="absolute top-[450px] left-[650px] -translate-x-1/2 -translate-y-1/2 w-48 bg-surface border border-border hover:border-primary/50 rounded-lg p-3 z-10 cursor-pointer transition-colors">
                                     <div className="flex justify-between items-start mb-1">
-                                        <h4 className="font-semibold text-white/90 text-sm">
+                                        <h4 className="font-semibold text-foreground/90 text-sm">
                                             Cloud Gardens
                                         </h4>
                                     </div>
                                     <p className="text-[10px] text-text-muted leading-relaxed">
                                         Elite residence, floating platforms, atmospheric generators.
                                     </p>
-                                    <div className="absolute top-1/2 -left-1.5 w-3 h-3 bg-text-muted rounded-full border-2 border-[#0b0e14]"></div>
+                                    <div className="absolute top-1/2 -left-1.5 w-3 h-3 bg-text-muted rounded-full border-2 border-background"></div>
                                 </div>
 
                                 {/* Linked Node 3 (Far) - AI Suggestion */}
-                                <div className="absolute top-[100px] left-[850px] -translate-x-1/2 -translate-y-1/2 w-40 bg-[#0d1117]/50 border border-white/10 border-dashed rounded-lg p-3 z-0 backdrop-blur-sm">
+                                <div className="absolute top-[100px] left-[850px] -translate-x-1/2 -translate-y-1/2 w-40 bg-surface/50 border border-border border-dashed rounded-lg p-3 z-0 backdrop-blur-sm">
                                     <div className="flex items-center gap-2 mb-1">
                                         <MdLightbulb className="text-yellow-500 text-xs" />
                                         <h4 className="font-medium text-text-muted text-xs italic">
@@ -227,28 +227,28 @@ export default function Hero() {
                             </div>
 
                             {/* Floating Action Bar (Bottom Center) */}
-                            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-[#161b22]/90 backdrop-blur border border-white/10 rounded-full px-4 py-2 flex items-center gap-4 shadow-xl z-20">
+                            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-surface-elevated/90 backdrop-blur border border-border rounded-full px-4 py-2 flex items-center gap-4 shadow-xl z-20">
                                 <button
-                                    className="w-8 h-8 rounded-full bg-white/5 hover:bg-primary hover:text-white text-text-muted flex items-center justify-center transition-colors tooltip"
+                                    className="w-8 h-8 rounded-full bg-surface hover:bg-primary hover:text-white text-text-muted flex items-center justify-center transition-colors tooltip"
                                     title="Select"
                                 >
                                     <MdNearMe className="text-sm" />
                                 </button>
-                                <button className="w-8 h-8 rounded-full bg-white/5 hover:bg-primary hover:text-white text-text-muted flex items-center justify-center transition-colors">
+                                <button className="w-8 h-8 rounded-full bg-surface hover:bg-primary hover:text-white text-text-muted flex items-center justify-center transition-colors">
                                     <MdHandshake className="text-sm" />
                                 </button>
-                                <div className="w-px h-4 bg-white/10"></div>
+                                <div className="w-px h-4 bg-border"></div>
                                 <button className="w-8 h-8 rounded-full bg-primary hover:bg-primary-light text-white flex items-center justify-center shadow-lg shadow-primary/40 transition-colors">
                                     <MdAdd className="text-xl" />
                                 </button>
-                                <button className="w-8 h-8 rounded-full bg-white/5 hover:bg-primary hover:text-white text-text-muted flex items-center justify-center transition-colors">
+                                <button className="w-8 h-8 rounded-full bg-surface hover:bg-primary hover:text-white text-text-muted flex items-center justify-center transition-colors">
                                     <MdImage className="text-sm" />
                                 </button>
                             </div>
                         </div>
 
                         {/* Inspector (Right) */}
-                        <div className="w-72 border-l border-white/10 bg-[#0d1117] p-4 hidden xl:block overflow-y-auto mockup-scroll">
+                        <div className="w-72 border-l border-border bg-surface p-4 hidden xl:block overflow-y-auto mockup-scroll">
                             <h5 className="text-xs font-bold uppercase text-text-muted tracking-wider mb-4">
                                 Properties
                             </h5>
@@ -258,7 +258,7 @@ export default function Hero() {
                                         NAME
                                     </label>
                                     <input
-                                        className="w-full bg-[#161b22] border border-white/10 rounded p-2 text-xs text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                                        className="w-full bg-surface-elevated border border-border rounded p-2 text-xs text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                                         type="text"
                                         defaultValue="Capital City"
                                     />
@@ -267,7 +267,7 @@ export default function Hero() {
                                     <label className="block text-[10px] font-medium text-text-muted mb-1">
                                         TYPE
                                     </label>
-                                    <select className="w-full bg-[#161b22] border border-white/10 rounded p-2 text-xs text-white outline-none focus:border-primary transition-all">
+                                    <select className="w-full bg-surface-elevated border border-border rounded p-2 text-xs text-foreground outline-none focus:border-primary transition-all">
                                         <option>Metropolis</option>
                                         <option>Village</option>
                                         <option>Outpost</option>
@@ -278,16 +278,16 @@ export default function Hero() {
                                         DESCRIPTION
                                     </label>
                                     <textarea
-                                        className="w-full bg-[#161b22] border border-white/10 rounded p-2 text-xs text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none leading-relaxed transition-all resize-none"
+                                        className="w-full bg-surface-elevated border border-border rounded p-2 text-xs text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none leading-relaxed transition-all resize-none"
                                         rows={4}
                                         defaultValue="The sprawling metropolis of glass and steel where the High Council meets to determine the fate of the outer rim."
                                     ></textarea>
                                 </div>
-                                <div className="pt-2 border-t border-white/10">
+                                <div className="pt-2 border-t border-border">
                                     <label className="block text-[10px] font-medium text-text-muted mb-2">
                                         GENERATED IMAGE
                                     </label>
-                                    <div className="rounded-lg overflow-hidden border border-white/10 h-32 w-full bg-[#161b22] relative group cursor-pointer">
+                                    <div className="rounded-lg overflow-hidden border border-border h-32 w-full bg-surface-elevated relative group cursor-pointer">
                                         <Image
                                             alt="Generated concept art"
                                             src="/hero-world.png"

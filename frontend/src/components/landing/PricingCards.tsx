@@ -59,7 +59,7 @@ export default function PricingCards() {
                             </li>
                             <li className="flex items-start gap-3 text-sm text-foreground">
                                 <span className="material-symbols-outlined text-green-500 text-[18px] shrink-0">check</span>
-                                <span>Token-limited AI Text</span>
+                                <span>Token-limited </span>
                             </li>
                             <li className="flex items-start gap-3 text-sm text-foreground">
                                 <span className="material-symbols-outlined text-green-500 text-[18px] shrink-0">check</span>
@@ -85,7 +85,6 @@ export default function PricingCards() {
                     <div className="mb-6">
                         <h3 className="text-xl font-bold text-foreground mb-2 flex items-center gap-2">
                             Pro
-                            <span className="material-symbols-outlined text-primary text-[18px]">auto_awesome</span>
                         </h3>
                         <p className="text-sm text-text-secondary">For engineers, architects, and game masters who need power.</p>
                     </div>
