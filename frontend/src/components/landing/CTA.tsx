@@ -2,12 +2,12 @@ import Link from "next/link";
 
 export default function CTA() {
     return (
-        <section className="py-20 bg-[#0A0F0D] relative overflow-hidden border-t border-white/5">
+        <section className="py-20 bg-background relative overflow-hidden border-t border-border">
             <div className="absolute inset-0 bg-primary/5"></div>
             <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
 
             <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
-                <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-white">
+                <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-foreground">
                     Start building your universe today.
                 </h2>
                 <p className="text-lg text-text-secondary mb-10 max-w-2xl mx-auto leading-relaxed">
@@ -23,7 +23,7 @@ export default function CTA() {
                     </Link>
                     <Link
                         href="/pricing"
-                        className="bg-[#161b22] hover:bg-[#1c2128] text-white border border-white/10 px-8 py-4 rounded-lg text-lg font-semibold shadow-sm transition-all hover:border-primary/50"
+                        className="bg-surface-elevated hover:bg-surface text-foreground border border-border px-8 py-4 rounded-lg text-lg font-semibold shadow-sm transition-all hover:border-primary/50"
                     >
                         View Enterprise Plans
                     </Link>

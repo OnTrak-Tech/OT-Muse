@@ -7,7 +7,7 @@ import { FaDiscord, FaTwitter, FaGithub } from "react-icons/fa";
 
 export default function Footer() {
     return (
-        <footer className="bg-[#05080f] border-t border-white/10 pt-16 pb-8">
+        <footer className="bg-background border-t border-border pt-16 pb-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
                     {/* Brand Column */}
@@ -16,7 +16,7 @@ export default function Footer() {
                             <div className="w-6 h-6 rounded bg-primary flex items-center justify-center">
                                 <MdPublic className="text-white text-xs" />
                             </div>
-                            <span className="font-bold text-lg tracking-tight text-white">
+                            <span className="font-bold text-lg tracking-tight text-foreground">
                                 OT-Muse
                             </span>
                         </div>
@@ -58,7 +58,7 @@ export default function Footer() {
 
                     {/* Links */}
                     <div>
-                        <h4 className="font-bold text-white mb-4">Product</h4>
+                        <h4 className="font-bold text-foreground mb-4">Product</h4>
                         <ul className="space-y-2 text-sm text-text-muted">
                             <li>
                                 <Link
@@ -97,7 +97,7 @@ export default function Footer() {
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-bold text-white mb-4">Resources</h4>
+                        <h4 className="font-bold text-foreground mb-4">Resources</h4>
                         <ul className="space-y-2 text-sm text-text-muted">
                             <li>
                                 <Link
@@ -131,7 +131,7 @@ export default function Footer() {
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-bold text-white mb-4">Company</h4>
+                        <h4 className="font-bold text-foreground mb-4">Company</h4>
                         <ul className="space-y-2 text-sm text-text-muted">
                             <li>
                                 <Link
@@ -165,7 +165,7 @@ export default function Footer() {
                         </ul>
                     </div>
                 </div>
-                <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-xs text-text-muted text-center md:text-left">
                         © 2026 OT-Muse. All rights reserved.
                     </p>

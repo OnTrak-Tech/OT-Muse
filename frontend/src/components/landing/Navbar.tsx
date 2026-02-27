@@ -1,16 +1,16 @@
 "use client";
 
 import Link from "next/link";
-
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Navbar() {
     return (
-        <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-[#0A0F0D]/80 backdrop-blur-md">
+        <nav className="fixed top-0 w-full z-50 border-b border-border bg-background/80 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
-                        <span className="font-bold text-xl tracking-tight text-white group-hover:text-primary transition-colors">
+                        <span className="font-bold text-xl tracking-tight text-foreground group-hover:text-primary transition-colors">
                             OT-Muse
                         </span>
                     </Link>
@@ -45,6 +45,8 @@ export default function Navbar() {
 
                     {/* CTA */}
                     <div className="flex items-center gap-4">
+                        <ThemeToggle />
+
                         <Link
                             href="/login"
                             className="hidden md:block text-sm font-medium text-text-secondary hover:text-primary transition-colors"
